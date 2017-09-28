@@ -1,0 +1,1 @@
+/usr/bin/cc  -g   CMakeFiles/DM818.dir/src/benchmark.c.o CMakeFiles/DM818.dir/src/dgemm-blocked.c.o CMakeFiles/DM818.dir/src/dgemm-naive.c.o CMakeFiles/DM818.dir/src/dgemm-blas.c.o CMakeFiles/DM818.dir/src/dgemm.c.o  -o DM818 

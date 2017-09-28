@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jervelund/ClionProjects/DM818/src/benchmark.cpp
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+float.h
+-
+math.h
+-
+sys/time.h
+-
+cblas.h
+-
+
+/home/jervelund/ClionProjects/DM818/src/dgemm-blas.cpp
+cblas.h
+-
+

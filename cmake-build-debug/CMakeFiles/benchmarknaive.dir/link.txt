@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/benchmarknaive.dir/src/benchmark.cpp.o CMakeFiles/benchmarknaive.dir/src/dgemm-naive.cpp.o  -o benchmarknaive 

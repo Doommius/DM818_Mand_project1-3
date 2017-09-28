@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/benchmarkblas.dir/src/benchmark.cpp.o CMakeFiles/benchmarkblas.dir/src/dgemm-blas.cpp.o  -o benchmarkblas 
