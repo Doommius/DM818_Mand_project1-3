@@ -7,6 +7,7 @@
 #include <intrin.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iosteam>
 #include <string.h>
 
 /*
@@ -14,26 +15,56 @@
   Matrix-Matrix multiplication.
 */
 
-const char *dgemm_desc = "Simple blocked dgemm.";
+const char *dgemm_desc = "mjerv15 blocked dgemm.";
+
+constexpr unsigned int NR = 4;
+
+constexpr unsigned int MR = 4;
+constexpr unsigned int KC = 128;
+
+constexpr unsigned int MC = 128;
+unsigned int lda;
+
+double *Ablock;
+double *Bblock;
+double *Cblock;
+
 
 
 // for 3470qm
 #if !defined(BLOCK_SIZE)
-#define l1_BLOCK_SIZE 32768  //(32KB = 2**10*32 = 32768)  64 kb total, 32 kb data and 32 kb instruction
-#define L2_BLOCK_SIZE 262144// 2**20*6  KB
-#define L3_BLOCK_SIZE (2^20*6)  // 2**20*6
+#define l1_BLOCK_SIZE 32  //(32KB = 2**10*32 = 32768)  64 kb total, 32 kb data and 32 kb instruction
+#define L2_BLOCK_SIZE 256// 2**20*6  KB
+#define L3_BLOCK_SIZE 1024*6  // 2**20*6
 #define mem_blocksize  2^30*16  // 16 gb of memory.
-#define registersize 256 // vector unit.
 #endif
 
-//for edison
-//#if !defined(BLOCK_SIZE)
-//#define l1_BLOCK_SIZE 32768  //(32KB = 2**10*32 = 32768)  64 kb total, 32 kb data and 32 kb instruction
-//#define L2_BLOCK_SIZE 262144// 2**20*6  KB
-//#define L3_BLOCK_SIZE (2^20*6)  // 2**20*30 (shared between all cores
-//#define registersize 256 //vector unit
-//#endif
 
+
+void packAblock (double *A, unsigned int M, unsigned int K){
+    unsigned int a;
+
+
+
+    for (unsigned int m = 0; m<M; m+=MR){
+        unsigned int MMax = std::min(MR,M-m);
+        for(unsigned int k = 0; k<K; k++){
+            Ablock[a++] = A[m+i+k*lda];
+        }
+    }
+}
+
+void PackBBlock(double *B, unsigned int K){
+    unsigned int b = 0;
+    for(unsigned int n = 0; n< lda; n++){
+        for (unsigned int k = 0; k< K; k++){
+            Bblock[b++] = B[k+n*lda];
+        }
+
+    }
+
+
+}
 
 
 
@@ -93,21 +124,25 @@ void do_block(int lda, double *A, double *B, double *C,int i, int j, int k) {
 }
 
 void square_dgemm(int M, double *A, double *B, double *C) {
-    for (int i = 0; i < M; i += mem_BLOCK_SIZE)
-        for (int j = 0; j < M; j += mem_BLOCK_SIZE)
-            for (int k = 0; k < M; k += mem_BLOCK_SIZE)
+    lda = M;
+    Ablock = (double*) _mm_malloc(MC*KC* sizeof(double),16);
+    Bblock = (double*) malloc(lda*KC* sizeof(double));
+    Cblock = (double*) _mm_malloc(MC*NR* sizeof(double),16);
 
-                for (int i = 0; i < M; i += L3_BLOCK_SIZE)
-                    for (int j = 0; j < M; j += L3_BLOCK_SIZE)
-                        for (int k = 0; k < M; k += L_3BLOCK_SIZE)
+    for(unsigned int k = 0; k < lda; k += KC){
+        packBblock(K+k,std::min(KC,lda-k));
+        for(unsigned int i = 1; k < lda; k += MC){
+            packAblock(A+i+k*lda, std::min(MC,lda-i),std::min(KC,lda-i));
+            dgebp(C+i, std::min(MC,lda-i),lda,std::min(KC, lda-k));
+        }
+    }
 
-                            for (int i = 0; i < M; i += L2_BLOCK_SIZE)
-                                for (int j = 0; j < M; j += L2_BLOCK_SIZE)
-                                    for (int k = 0; k < M; k += L2_BLOCK_SIZE)
 
-                                        for (int i = 0; i < M; i += L1_BLOCK_SIZE)
-                                            for (int j = 0; j < M; j += L1_BLOCK_SIZE)
-                                                for (int k = 0; k < M; k += L1_BLOCK_SIZE)
-                                                    do_block(M, A, B, C, i, j, k);
+
+
+
+    _mm_free(Ablock);
+    free(Bblock);
+    _mm_free(Cblock);
 }
 
