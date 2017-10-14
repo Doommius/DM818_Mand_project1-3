@@ -4,7 +4,6 @@
 
 #include <float.h>
 #include <math.h>
-
 #include <sys/time.h>
 //NOTE: #include <acml.h> //assumes AMD platform
 extern "C" {
@@ -64,6 +63,8 @@ int main( int argc, char **argv )
         31, 32, 96, 97, 127, 128, 129, 191, 192, 229, 255, 256, 257,
         319, 320, 321, 417, 479, 480, 511, 512, 639, 640, 767, 768, 769,
     };
+//
+//    int test_sizes[] = {2};
     
     for( int isize = 0; isize < sizeof(test_sizes)/sizeof(test_sizes[0]); isize++ )
     {

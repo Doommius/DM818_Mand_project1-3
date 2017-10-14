@@ -17,22 +17,17 @@ CC = g++
 #LIBS = -L/home/daniel/atlas/lib -lptcblas -latlas -lpthread
 
 #otherwise use
-LIBS = -lcblas -latlas -lpthread
+#LIBS = -lcblas -latlas -lpthread
 
 #single-thread cblas for IMADA i5 3.2 GHz machine
 #LIBS = -L/home/daniel/atlas/lib -lcblas -latlas
 
 #not optimized Ubuntu version
-#LIBS= -lcblas
-
-
-
-#not optimized Ubuntu version
-#LIBS= -lcblas
+LIBS= -lcblas
 
 CFLAGS = -O3
 
-all:	benchmark-naive benchmark-blocked benchmark-blas
+all:	benchmark-naive benchmark-blocked benchmark-blas benchmark-mjerv
 
 benchmark-naive: benchmark.o dgemm-naive.o
 	$(CC) -o $@ benchmark.o dgemm-naive.o $(LIBS)
@@ -40,7 +35,8 @@ benchmark-blocked: benchmark.o dgemm-blocked.o
 	$(CC) -o $@ benchmark.o dgemm-blocked.o $(LIBS)
 benchmark-blas: benchmark.o dgemm-blas.o
 	$(CC) -o $@ benchmark.o dgemm-blas.o $(LIBS)
-
+benchmark-mjerv : benchmark.o dgemm-mjerv.o
+	$(CC) -o $@ benchmark.o dgemm-mjerv.o $(LIBS)
 %.o: %.cpp
 	$(CC) -c $(CFLAGS) $<
 
@@ -48,4 +44,4 @@ benchmark-blas: benchmark.o dgemm-blas.o
 	$(CC) -c $(CFLAGS) $<
 
 clean:
-	rm -f benchmark-naive benchmark-blocked benchmark-blas *.o
+	rm -f benchmark-naive benchmark-blocked benchmark-blas benchmark-mjerv *.o

@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named mjerv
+
+# Build rule for target.
+mjerv: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mjerv
+.PHONY : mjerv
+
+# fast build rule for target.
+mjerv/fast:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/build
+.PHONY : mjerv/fast
+
+#=============================================================================
 # Target rules for targets named benchmarkblas
 
 # Build rule for target.
@@ -168,9 +181,11 @@ src/benchmark.o: src/benchmark.cpp.o
 
 # target to build an object file
 src/benchmark.cpp.o:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/src/benchmark.cpp.o
 	$(MAKE) -f CMakeFiles/benchmarkblas.dir/build.make CMakeFiles/benchmarkblas.dir/src/benchmark.cpp.o
 	$(MAKE) -f CMakeFiles/benchmarkblocked.dir/build.make CMakeFiles/benchmarkblocked.dir/src/benchmark.cpp.o
 	$(MAKE) -f CMakeFiles/benchmarknaive.dir/build.make CMakeFiles/benchmarknaive.dir/src/benchmark.cpp.o
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/benchmark.cpp.o
 .PHONY : src/benchmark.cpp.o
 
 src/benchmark.i: src/benchmark.cpp.i
@@ -179,9 +194,11 @@ src/benchmark.i: src/benchmark.cpp.i
 
 # target to preprocess a source file
 src/benchmark.cpp.i:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/src/benchmark.cpp.i
 	$(MAKE) -f CMakeFiles/benchmarkblas.dir/build.make CMakeFiles/benchmarkblas.dir/src/benchmark.cpp.i
 	$(MAKE) -f CMakeFiles/benchmarkblocked.dir/build.make CMakeFiles/benchmarkblocked.dir/src/benchmark.cpp.i
 	$(MAKE) -f CMakeFiles/benchmarknaive.dir/build.make CMakeFiles/benchmarknaive.dir/src/benchmark.cpp.i
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/benchmark.cpp.i
 .PHONY : src/benchmark.cpp.i
 
 src/benchmark.s: src/benchmark.cpp.s
@@ -190,9 +207,11 @@ src/benchmark.s: src/benchmark.cpp.s
 
 # target to generate assembly for a file
 src/benchmark.cpp.s:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/src/benchmark.cpp.s
 	$(MAKE) -f CMakeFiles/benchmarkblas.dir/build.make CMakeFiles/benchmarkblas.dir/src/benchmark.cpp.s
 	$(MAKE) -f CMakeFiles/benchmarkblocked.dir/build.make CMakeFiles/benchmarkblocked.dir/src/benchmark.cpp.s
 	$(MAKE) -f CMakeFiles/benchmarknaive.dir/build.make CMakeFiles/benchmarknaive.dir/src/benchmark.cpp.s
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/benchmark.cpp.s
 .PHONY : src/benchmark.cpp.s
 
 src/dgemm-blas.o: src/dgemm-blas.cpp.o
@@ -202,6 +221,7 @@ src/dgemm-blas.o: src/dgemm-blas.cpp.o
 # target to build an object file
 src/dgemm-blas.cpp.o:
 	$(MAKE) -f CMakeFiles/benchmarkblas.dir/build.make CMakeFiles/benchmarkblas.dir/src/dgemm-blas.cpp.o
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o
 .PHONY : src/dgemm-blas.cpp.o
 
 src/dgemm-blas.i: src/dgemm-blas.cpp.i
@@ -211,6 +231,7 @@ src/dgemm-blas.i: src/dgemm-blas.cpp.i
 # target to preprocess a source file
 src/dgemm-blas.cpp.i:
 	$(MAKE) -f CMakeFiles/benchmarkblas.dir/build.make CMakeFiles/benchmarkblas.dir/src/dgemm-blas.cpp.i
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blas.cpp.i
 .PHONY : src/dgemm-blas.cpp.i
 
 src/dgemm-blas.s: src/dgemm-blas.cpp.s
@@ -220,7 +241,35 @@ src/dgemm-blas.s: src/dgemm-blas.cpp.s
 # target to generate assembly for a file
 src/dgemm-blas.cpp.s:
 	$(MAKE) -f CMakeFiles/benchmarkblas.dir/build.make CMakeFiles/benchmarkblas.dir/src/dgemm-blas.cpp.s
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blas.cpp.s
 .PHONY : src/dgemm-blas.cpp.s
+
+src/dgemm-blocked-mjev.o: src/dgemm-blocked-mjev.cpp.o
+
+.PHONY : src/dgemm-blocked-mjev.o
+
+# target to build an object file
+src/dgemm-blocked-mjev.cpp.o:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/src/dgemm-blocked-mjev.cpp.o
+.PHONY : src/dgemm-blocked-mjev.cpp.o
+
+src/dgemm-blocked-mjev.i: src/dgemm-blocked-mjev.cpp.i
+
+.PHONY : src/dgemm-blocked-mjev.i
+
+# target to preprocess a source file
+src/dgemm-blocked-mjev.cpp.i:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/src/dgemm-blocked-mjev.cpp.i
+.PHONY : src/dgemm-blocked-mjev.cpp.i
+
+src/dgemm-blocked-mjev.s: src/dgemm-blocked-mjev.cpp.s
+
+.PHONY : src/dgemm-blocked-mjev.s
+
+# target to generate assembly for a file
+src/dgemm-blocked-mjev.cpp.s:
+	$(MAKE) -f CMakeFiles/mjerv.dir/build.make CMakeFiles/mjerv.dir/src/dgemm-blocked-mjev.cpp.s
+.PHONY : src/dgemm-blocked-mjev.cpp.s
 
 src/dgemm-blocked.o: src/dgemm-blocked.cpp.o
 
@@ -229,6 +278,7 @@ src/dgemm-blocked.o: src/dgemm-blocked.cpp.o
 # target to build an object file
 src/dgemm-blocked.cpp.o:
 	$(MAKE) -f CMakeFiles/benchmarkblocked.dir/build.make CMakeFiles/benchmarkblocked.dir/src/dgemm-blocked.cpp.o
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o
 .PHONY : src/dgemm-blocked.cpp.o
 
 src/dgemm-blocked.i: src/dgemm-blocked.cpp.i
@@ -238,6 +288,7 @@ src/dgemm-blocked.i: src/dgemm-blocked.cpp.i
 # target to preprocess a source file
 src/dgemm-blocked.cpp.i:
 	$(MAKE) -f CMakeFiles/benchmarkblocked.dir/build.make CMakeFiles/benchmarkblocked.dir/src/dgemm-blocked.cpp.i
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.i
 .PHONY : src/dgemm-blocked.cpp.i
 
 src/dgemm-blocked.s: src/dgemm-blocked.cpp.s
@@ -247,7 +298,35 @@ src/dgemm-blocked.s: src/dgemm-blocked.cpp.s
 # target to generate assembly for a file
 src/dgemm-blocked.cpp.s:
 	$(MAKE) -f CMakeFiles/benchmarkblocked.dir/build.make CMakeFiles/benchmarkblocked.dir/src/dgemm-blocked.cpp.s
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.s
 .PHONY : src/dgemm-blocked.cpp.s
+
+src/dgemm-mjerv.o: src/dgemm-mjerv.cpp.o
+
+.PHONY : src/dgemm-mjerv.o
+
+# target to build an object file
+src/dgemm-mjerv.cpp.o:
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o
+.PHONY : src/dgemm-mjerv.cpp.o
+
+src/dgemm-mjerv.i: src/dgemm-mjerv.cpp.i
+
+.PHONY : src/dgemm-mjerv.i
+
+# target to preprocess a source file
+src/dgemm-mjerv.cpp.i:
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.i
+.PHONY : src/dgemm-mjerv.cpp.i
+
+src/dgemm-mjerv.s: src/dgemm-mjerv.cpp.s
+
+.PHONY : src/dgemm-mjerv.s
+
+# target to generate assembly for a file
+src/dgemm-mjerv.cpp.s:
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.s
+.PHONY : src/dgemm-mjerv.cpp.s
 
 src/dgemm-naive.o: src/dgemm-naive.cpp.o
 
@@ -256,6 +335,7 @@ src/dgemm-naive.o: src/dgemm-naive.cpp.o
 # target to build an object file
 src/dgemm-naive.cpp.o:
 	$(MAKE) -f CMakeFiles/benchmarknaive.dir/build.make CMakeFiles/benchmarknaive.dir/src/dgemm-naive.cpp.o
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o
 .PHONY : src/dgemm-naive.cpp.o
 
 src/dgemm-naive.i: src/dgemm-naive.cpp.i
@@ -265,6 +345,7 @@ src/dgemm-naive.i: src/dgemm-naive.cpp.i
 # target to preprocess a source file
 src/dgemm-naive.cpp.i:
 	$(MAKE) -f CMakeFiles/benchmarknaive.dir/build.make CMakeFiles/benchmarknaive.dir/src/dgemm-naive.cpp.i
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-naive.cpp.i
 .PHONY : src/dgemm-naive.cpp.i
 
 src/dgemm-naive.s: src/dgemm-naive.cpp.s
@@ -274,6 +355,7 @@ src/dgemm-naive.s: src/dgemm-naive.cpp.s
 # target to generate assembly for a file
 src/dgemm-naive.cpp.s:
 	$(MAKE) -f CMakeFiles/benchmarknaive.dir/build.make CMakeFiles/benchmarknaive.dir/src/dgemm-naive.cpp.s
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-naive.cpp.s
 .PHONY : src/dgemm-naive.cpp.s
 
 # Help Target
@@ -284,6 +366,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... mjerv"
 	@echo "... benchmarkblas"
 	@echo "... benchmarkblocked"
 	@echo "... benchmarknaive"
@@ -294,9 +377,15 @@ help:
 	@echo "... src/dgemm-blas.o"
 	@echo "... src/dgemm-blas.i"
 	@echo "... src/dgemm-blas.s"
+	@echo "... src/dgemm-blocked-mjev.o"
+	@echo "... src/dgemm-blocked-mjev.i"
+	@echo "... src/dgemm-blocked-mjev.s"
 	@echo "... src/dgemm-blocked.o"
 	@echo "... src/dgemm-blocked.i"
 	@echo "... src/dgemm-blocked.s"
+	@echo "... src/dgemm-mjerv.o"
+	@echo "... src/dgemm-mjerv.i"
+	@echo "... src/dgemm-mjerv.s"
 	@echo "... src/dgemm-naive.o"
 	@echo "... src/dgemm-naive.i"
 	@echo "... src/dgemm-naive.s"

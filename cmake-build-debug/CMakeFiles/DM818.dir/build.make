@@ -57,7 +57,157 @@ include CMakeFiles/DM818.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/DM818.dir/flags.make
 
-CMakeFiles/DM818.dir/requires:
+CMakeFiles/DM818.dir/src/benchmark.cpp.o: CMakeFiles/DM818.dir/flags.make
+CMakeFiles/DM818.dir/src/benchmark.cpp.o: ../src/benchmark.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DM818.dir/src/benchmark.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DM818.dir/src/benchmark.cpp.o -c /home/jervelund/ClionProjects/DM818/src/benchmark.cpp
+
+CMakeFiles/DM818.dir/src/benchmark.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DM818.dir/src/benchmark.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jervelund/ClionProjects/DM818/src/benchmark.cpp > CMakeFiles/DM818.dir/src/benchmark.cpp.i
+
+CMakeFiles/DM818.dir/src/benchmark.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DM818.dir/src/benchmark.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jervelund/ClionProjects/DM818/src/benchmark.cpp -o CMakeFiles/DM818.dir/src/benchmark.cpp.s
+
+CMakeFiles/DM818.dir/src/benchmark.cpp.o.requires:
+
+.PHONY : CMakeFiles/DM818.dir/src/benchmark.cpp.o.requires
+
+CMakeFiles/DM818.dir/src/benchmark.cpp.o.provides: CMakeFiles/DM818.dir/src/benchmark.cpp.o.requires
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/benchmark.cpp.o.provides.build
+.PHONY : CMakeFiles/DM818.dir/src/benchmark.cpp.o.provides
+
+CMakeFiles/DM818.dir/src/benchmark.cpp.o.provides.build: CMakeFiles/DM818.dir/src/benchmark.cpp.o
+
+
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o: CMakeFiles/DM818.dir/flags.make
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o: ../src/dgemm-blocked.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o -c /home/jervelund/ClionProjects/DM818/src/dgemm-blocked.cpp
+
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jervelund/ClionProjects/DM818/src/dgemm-blocked.cpp > CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.i
+
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jervelund/ClionProjects/DM818/src/dgemm-blocked.cpp -o CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.s
+
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.requires:
+
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.requires
+
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.provides: CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.requires
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.provides.build
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.provides
+
+CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.provides.build: CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o
+
+
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o: CMakeFiles/DM818.dir/flags.make
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o: ../src/dgemm-naive.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o -c /home/jervelund/ClionProjects/DM818/src/dgemm-naive.cpp
+
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DM818.dir/src/dgemm-naive.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jervelund/ClionProjects/DM818/src/dgemm-naive.cpp > CMakeFiles/DM818.dir/src/dgemm-naive.cpp.i
+
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DM818.dir/src/dgemm-naive.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jervelund/ClionProjects/DM818/src/dgemm-naive.cpp -o CMakeFiles/DM818.dir/src/dgemm-naive.cpp.s
+
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.requires:
+
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.requires
+
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.provides: CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.requires
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.provides.build
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.provides
+
+CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.provides.build: CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o
+
+
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o: CMakeFiles/DM818.dir/flags.make
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o: ../src/dgemm-blas.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o -c /home/jervelund/ClionProjects/DM818/src/dgemm-blas.cpp
+
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DM818.dir/src/dgemm-blas.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jervelund/ClionProjects/DM818/src/dgemm-blas.cpp > CMakeFiles/DM818.dir/src/dgemm-blas.cpp.i
+
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DM818.dir/src/dgemm-blas.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jervelund/ClionProjects/DM818/src/dgemm-blas.cpp -o CMakeFiles/DM818.dir/src/dgemm-blas.cpp.s
+
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.requires:
+
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.requires
+
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.provides: CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.requires
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.provides.build
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.provides
+
+CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.provides.build: CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o
+
+
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o: CMakeFiles/DM818.dir/flags.make
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o: ../src/dgemm-mjerv.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o -c /home/jervelund/ClionProjects/DM818/src/dgemm-mjerv.cpp
+
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jervelund/ClionProjects/DM818/src/dgemm-mjerv.cpp > CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.i
+
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jervelund/ClionProjects/DM818/src/dgemm-mjerv.cpp -o CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.s
+
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.requires:
+
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.requires
+
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.provides: CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.requires
+	$(MAKE) -f CMakeFiles/DM818.dir/build.make CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.provides.build
+.PHONY : CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.provides
+
+CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.provides.build: CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o
+
+
+# Object files for target DM818
+DM818_OBJECTS = \
+"CMakeFiles/DM818.dir/src/benchmark.cpp.o" \
+"CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o" \
+"CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o" \
+"CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o" \
+"CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o"
+
+# External object files for target DM818
+DM818_EXTERNAL_OBJECTS =
+
+DM818: CMakeFiles/DM818.dir/src/benchmark.cpp.o
+DM818: CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o
+DM818: CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o
+DM818: CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o
+DM818: CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o
+DM818: CMakeFiles/DM818.dir/build.make
+DM818: CMakeFiles/DM818.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable DM818"
+	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DM818.dir/link.txt --verbose=$(VERBOSE)
+
+# Rule to build all files generated by this target.
+CMakeFiles/DM818.dir/build: DM818
+
+.PHONY : CMakeFiles/DM818.dir/build
+
+CMakeFiles/DM818.dir/requires: CMakeFiles/DM818.dir/src/benchmark.cpp.o.requires
+CMakeFiles/DM818.dir/requires: CMakeFiles/DM818.dir/src/dgemm-blocked.cpp.o.requires
+CMakeFiles/DM818.dir/requires: CMakeFiles/DM818.dir/src/dgemm-naive.cpp.o.requires
+CMakeFiles/DM818.dir/requires: CMakeFiles/DM818.dir/src/dgemm-blas.cpp.o.requires
+CMakeFiles/DM818.dir/requires: CMakeFiles/DM818.dir/src/dgemm-mjerv.cpp.o.requires
 
 .PHONY : CMakeFiles/DM818.dir/requires
 
