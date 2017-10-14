@@ -112,22 +112,22 @@ void Prepare_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
 }
 
 void core_4_4(double *A,double *B,double *C, unsigned int k){
-    __mm_256d Cx0y0 = __mm_set_pd(0.0);
-    __mm_256d Cx0y1 = __mm_set_pd(0.0);
-    __mm_256d Cx1y0 = __mm_set_pd(0.0);
-    __mm_256d Cx1y1 = __mm_set_pd(0.0);
-    __mm_256d Cx2y0 = __mm_set_pd(0.0);
-    __mm_256d Cx2y1 = __mm_set_pd(0.0);
-    __mm_256d Cx3y0 = __mm_set_pd(0.0);
-    __mm_256d Cx3y1 = __mm_set_pd(0.0);
-    __mm_256d Cx4y0 = __mm_set_pd(0.0);
-    __mm_256d Cx4y1 = __mm_set_pd(0.0);
-    __mm_256d Cx5y0 = __mm_set_pd(0.0);
-    __mm_256d Cx5y1 = __mm_set_pd(0.0);
-    __mm_256d Cx6y0 = __mm_set_pd(0.0);
-    __mm_256d Cx6y1 = __mm_set_pd(0.0);
-    __mm_256d Cx7y0 = __mm_set_pd(0.0);
-    __mm_256d Cx7y1 = __mm_set_pd(0.0);
+    __mm_256d cx0y0 = __mm_set_pd(0.0);
+    __mm_256d cx0y1 = __mm_set_pd(0.0);
+    __mm_256d cx1y0 = __mm_set_pd(0.0);
+    __mm_256d cx1y1 = __mm_set_pd(0.0);
+    __mm_256d cx2y0 = __mm_set_pd(0.0);
+    __mm_256d cx2y1 = __mm_set_pd(0.0);
+    __mm_256d cx3y0 = __mm_set_pd(0.0);
+    __mm_256d cx3y1 = __mm_set_pd(0.0);
+    __mm_256d cx4y0 = __mm_set_pd(0.0);
+    __mm_256d cx4y1 = __mm_set_pd(0.0);
+    __mm_256d cx5y0 = __mm_set_pd(0.0);
+    __mm_256d cx5y1 = __mm_set_pd(0.0);
+    __mm_256d cx6y0 = __mm_set_pd(0.0);
+    __mm_256d cx6y1 = __mm_set_pd(0.0);
+    __mm_256d cx7y0 = __mm_set_pd(0.0);
+    __mm_256d cx7y1 = __mm_set_pd(0.0);
 }
 void square_dgemm(int M, double *A, double *B, double *C) {
     lda = M;
