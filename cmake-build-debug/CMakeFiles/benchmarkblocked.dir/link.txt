@@ -1,1 +1,0 @@
-/usr/bin/c++   -g   CMakeFiles/benchmarkblocked.dir/src/benchmark.cpp.o CMakeFiles/benchmarkblocked.dir/src/dgemm-blocked.cpp.o  -o benchmarkblocked 

@@ -1,7 +1,0 @@
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/mjerv.dir
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/benchmarkblas.dir
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/benchmarkblocked.dir
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/benchmarknaive.dir
-/home/jervelund/ClionProjects/DM818/cmake-build-debug/CMakeFiles/DM818.dir

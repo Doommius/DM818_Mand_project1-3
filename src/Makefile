@@ -37,6 +37,18 @@ benchmark-blas: benchmark.o dgemm-blas.o
 	$(CC) -o $@ benchmark.o dgemm-blas.o $(LIBS)
 benchmark-mjerv : benchmark.o dgemm-mjerv.o
 	$(CC) -o $@ benchmark.o dgemm-mjerv.o $(LIBS)
+
+test-naive : test.o dgemm-naive.o
+	$(CC) -o $@ test.o dgemm-naive.o
+
+
+test-mjerv : test.o dgemm-mjerv.o
+	$(CC) -o $@ test.o dgemm-mjerv.o
+
+test-blocked : test.o dgemm-blocked.o
+	$(CC) -o $@ test.o dgemm-blocked.o
+
+
 %.o: %.cpp
 	$(CC) -c $(CFLAGS) $<
 
