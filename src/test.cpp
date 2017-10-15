@@ -8,6 +8,7 @@
 #include <math.h>
 #include <malloc.h>
 #include <iostream>
+#include <time.h>       /* time */
 
 
 //
@@ -28,6 +29,10 @@ void filltest(double *p, int n) {
     for (int i = 0; i < n; i++)
         p[i] = 5;
 }
+void filltest0(double *p, int n) {
+    for (int i = 0; i < n; i++)
+        p[i] = 0;
+}
 
 void printMatrix(double *matrix, int MatrixSize) {
     for (int i = 0; i < MatrixSize; i++) {
@@ -41,6 +46,8 @@ void printMatrix(double *matrix, int MatrixSize) {
 
 
 int main(int argc, char **argv) {
+
+    srand (time(NULL));
 printf("Test Program running \n");
 //    printf("Description:\t%s\n\n", dgemm_desc);
 
@@ -61,7 +68,7 @@ printf("Test Program running \n");
 
         filltest(A, n * n);
         filltest(B, n * n);
-        filltest(C, n * n);
+        filltest0(C, n * n);
         printf("Matrix A \n");
         printMatrix(A, n);
         printf("Matrix B \n");

@@ -114,11 +114,31 @@ void Prepare_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
 void core_4_4(double *A,double *B,double *C, unsigned int k){
     __m256d Vec10 = _mm256_set_pd(0.0,0.0,0.0,0.0);
     __m256d Vec11 = _mm256_set_pd(0.0,0.0,0.0,0.0);
+}
 
-
-
-
+//maybe working, currently unsure.
+void core_dyn(double *A,double *B,double *C, unsigned int M,unsigned int N,unsigned int K){
+for(unsigned int j = 0; j < N; j++){
+    for (unsigned int i; i < M; i++){
+        __m256d C = _mm_set1_pd(0.0);
+        for (unsigned int k = 0; k < K -3; k+4){
+            __m256d a = _mm256_set_pd(A[i+(k+1)*M],A[i+(k+0)*M],A[i+(k+3)*M],A[i+(k+2)*M]);
+            __m256d b = _mm256_loadu_pd(B+k+j*K);
+            b = _mm256_mul_pd(a,b);
+            c = _mm256_add_pd(c,b);
+        }
+        c = __mm256_hadd_pd(c,c);
+        if (k % 4 == 1){
+            __m256d a = _mm256_load_sd(A+i+(K-1)*M);
+            __m256d a = _mm256_load_sd(B+(K-1)+j*M);
+            t = _mm_mul_sd(a,t);
+            c = _mm_add_sd(c,t);
+        }
+        _m_store_sd(C+i+j*MC,c);
     }
+}
+}
+
 void square_dgemm(int M, double *A, double *B, double *C) {
     lda = M;
     Ablock = (double *) _mm_malloc(MC * KC * sizeof(double), 16); //128*128
