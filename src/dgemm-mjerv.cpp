@@ -11,6 +11,7 @@
 
 /*
   In case you're wondering, dgemm stands for Double-precision, GEneral  Matrix-Matrix multiplication.
+
 */
 
 const char *dgemm_desc = "mjerv15 blocked dgemm.";
