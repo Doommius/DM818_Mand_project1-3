@@ -125,9 +125,9 @@ int main( int argc, char **argv )
                 exit(-1);
             }
 
-//        free( C );
-//        free( B );
-//        free( A );
+        free( C );
+        free( B );
+        free( A );
 //    }
     
     return 0;

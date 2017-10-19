@@ -1,6 +1,21 @@
 \select@language {english}
 \contentsline {section}{Project description}{1}
 \contentsline {section}{Introduction}{2}
+\contentsline {subsection}{Work load}{2}
+\contentsline {subsection}{Issues}{2}
 \contentsline {section}{Design}{2}
-\contentsline {section}{appendix}{2}
-\contentsline {section}{notes from lecture with Jakob}{2}
+\contentsline {subsection}{Advice from lecturer}{2}
+\contentsline {subsection}{Own design choices}{2}
+\contentsline {section}{Implementation}{3}
+\contentsline {subsection}{Square-dgemm}{3}
+\contentsline {subsection}{Blocking functions}{3}
+\contentsline {subsection}{Prepare-block}{3}
+\contentsline {section}{testing}{3}
+\contentsline {section}{Comparison}{3}
+\contentsline {section}{Conclusion}{3}
+\contentsline {section}{appendix}{4}
+\contentsline {subsection}{Goto paper }{4}
+\contentsline {subsection}{Code Protect}{4}
+\contentsline {subsection}{Valgrind result and stackoverflow post}{4}
+\contentsline {section}{other}{4}
+\contentsline {section}{notes from lecture with Jakob}{5}

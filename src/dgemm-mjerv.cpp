@@ -11,7 +11,6 @@
 
 /*
   In case you're wondering, dgemm stands for Double-precision, GEneral  Matrix-Matrix multiplication.
-
 */
 
 const char *dgemm_desc = "mjerv15 blocked dgemm.";
@@ -61,6 +60,7 @@ double *Cblock;
 //  |                         |   |                         |
 //  +-------------------------+   +-------------------------+
 
+//debugging
 void printMatrix2(double *matrix, int MatrixSize) {
     std::cout << ("Starting Matrix") << '\n';
     for (int i = 0; i < MatrixSize * MatrixSize; i++) {
@@ -106,14 +106,14 @@ void packBBlock(double *B, unsigned int K) {
 }
 
 
-//TODO currently broken
+//TODO currently broken, currently fixed
 void unpackCBlock(double *C, unsigned int M, unsigned int N) {
 //    printMatrix2(Cblock,4 );
     for (unsigned int n = 0; n < NR; n++) {
         for (unsigned int i = 0; i < M; i++) {
-            int lookingat = i + n * MC;
-            int storeingat = i + n * lda;
-            double x = Cblock[lookingat];
+//            int lookingat = i + n * MC;    ////Debugging value used when debugging with gdb
+//            int storeingat = i + n * lda;  ////Debugging value used when debugging with gdb
+//            double x = Cblock[lookingat];  ////Debugging value used when debugging with gdb
             C[i + n * lda] = Cblock[i + n * MC];
         }
     }
@@ -125,132 +125,96 @@ void unpackCBlock(double *C, unsigned int M, unsigned int N) {
 // __m256d c01x0-3 could be written as __m256d c23 = _mm_set_pd(0.0,0.0,0.0,0.0); and same goes for most of this function.
 void core_4_4(double *A, double *B, double *C, unsigned int K) {
 //     std::cout << "K is = " << K << '\n';
-    __m256d c0123x0 = _mm256_setzero_pd();
-    __m256d c0123x1 = _mm256_setzero_pd();
-    __m256d c0123x2 = _mm256_setzero_pd();
-    __m256d c0123x3 = _mm256_setzero_pd();
+    __m256d c0 = _mm256_setzero_pd();
+    __m256d c1 = _mm256_setzero_pd();
+    __m256d c2  = _mm256_setzero_pd();
+    __m256d c3  = _mm256_setzero_pd();
 
     for (unsigned int k = 0; k < K - 1; k += 2) {
 //        printdouble(A+k*MR,4);
 //        printdouble(A+(2+k)*MR,4);
 
-        __m256d a0123k0 = _mm256_load_pd(A + k * MR);
+        __m256d a1 = _mm256_load_pd(A + k * MR);
 //        printdouble("A0123k0",A + (k) * MR, 4);
 
-        __m256d a0123k1 = _mm256_load_pd(A + (k + 1) * MR);
+        __m256d a2 = _mm256_load_pd(A + (k + 1) * MR);
 
 //        printdouble("A0123k1",A+ (k+1) * MR, 4);
 
-        __m256d b0x0 = _mm256_set1_pd(B[k]);
-        __m256d b0x1 = _mm256_set1_pd(B[k + K]);
-        __m256d b0x2 = _mm256_set1_pd(B[k + K * 2]);
-        __m256d b0x3 = _mm256_set1_pd(B[k + K * 3]);
+        __m256d b00  = _mm256_set1_pd(B[k]);
+        __m256d b01  = _mm256_set1_pd(B[k + K]);
+        __m256d b02  = _mm256_set1_pd(B[k + K * 2]);
+        __m256d b03  = _mm256_set1_pd(B[k + K * 3]);
 
-        __m256d b1x0 = _mm256_set1_pd(B[k + 1]);
-        __m256d b1x1 = _mm256_set1_pd(B[k + K + 1]);
-        __m256d b1x2 = _mm256_set1_pd(B[k + K * 2 + 1]);
-        __m256d b1x3 = _mm256_set1_pd(B[k + K * 3 + 1]);
+        __m256d b10  = _mm256_set1_pd(B[k + 1]);
+        __m256d b11  = _mm256_set1_pd(B[k + K + 1]);
+        __m256d b12  = _mm256_set1_pd(B[k + K * 2 + 1]);
+        __m256d b13  = _mm256_set1_pd(B[k + K * 3 + 1]);
 
         //do left
-        c0123x0 = _mm256_add_pd(c0123x0, _mm256_mul_pd(b0x0, a0123k0));
-        c0123x1 = _mm256_add_pd(c0123x1, _mm256_mul_pd(b0x1, a0123k0));
-        c0123x2 = _mm256_add_pd(c0123x2, _mm256_mul_pd(b0x2, a0123k0));
-        c0123x3 = _mm256_add_pd(c0123x3, _mm256_mul_pd(b0x3, a0123k0));
+        c0 = _mm256_add_pd(c0, _mm256_mul_pd(b00, a1));
+        c1 = _mm256_add_pd(c1, _mm256_mul_pd(b01, a1));
+        c2 = _mm256_add_pd(c2, _mm256_mul_pd(b02, a1));
+        c3 = _mm256_add_pd(c3, _mm256_mul_pd(b03, a1));
 
-        c0123x0 = _mm256_add_pd(c0123x0, _mm256_mul_pd(b1x0, a0123k1));
-        c0123x1 = _mm256_add_pd(c0123x1, _mm256_mul_pd(b1x1, a0123k1));
-        c0123x2 = _mm256_add_pd(c0123x2, _mm256_mul_pd(b1x2, a0123k1));
-        c0123x3 = _mm256_add_pd(c0123x3, _mm256_mul_pd(b1x3, a0123k1));
-
+        c0 = _mm256_add_pd(c0, _mm256_mul_pd(b10, a2));
+        c1 = _mm256_add_pd(c1, _mm256_mul_pd(b11, a2));
+        c2 = _mm256_add_pd(c2, _mm256_mul_pd(b12, a2));
+        c3 = _mm256_add_pd(c3, _mm256_mul_pd(b13, a2));
 
     }
+    //edge case.
     if (K % 2 == 1) {
         unsigned int k = K - 1;
-        __m256d a0123k0 = _mm256_load_pd(A + k * MR);
+        __m256d a0 = _mm256_load_pd(A + k * MR);
 
-        __m256d b0x0 = _mm256_set1_pd(B[k]);
-        __m256d b0x1 = _mm256_set1_pd(B[k + K]);
-        __m256d b0x2 = _mm256_set1_pd(B[k + K * 2]);
-        __m256d b0x3 = _mm256_set1_pd(B[k + K * 3]);
+        __m256d b00 = _mm256_set1_pd(B[k]);
+        __m256d b01 = _mm256_set1_pd(B[k + K]);
+        __m256d b02 = _mm256_set1_pd(B[k + K * 2]);
+        __m256d b03 = _mm256_set1_pd(B[k + K * 3]);
 
-        c0123x0 = _mm256_add_pd(c0123x0, _mm256_mul_pd(b0x0, a0123k0));
-        c0123x1 = _mm256_add_pd(c0123x1, _mm256_mul_pd(b0x1, a0123k0));
-        c0123x2 = _mm256_add_pd(c0123x2, _mm256_mul_pd(b0x2, a0123k0));
-        c0123x3 = _mm256_add_pd(c0123x3, _mm256_mul_pd(b0x3, a0123k0));
+        c0 = _mm256_add_pd(c0, _mm256_mul_pd(b00, a0));
+        c1 = _mm256_add_pd(c1, _mm256_mul_pd(b01, a0));
+        c2 = _mm256_add_pd(c2, _mm256_mul_pd(b02, a0));
+        c3 = _mm256_add_pd(c3, _mm256_mul_pd(b03, a0));
     }
 
-
-    //TODO something is broken here.
+    //TODO something is broken here. its been fixed
+    ////Debugging value used when debugging with gdb
 //    double *tmp = (double *) _mm_malloc(NR * sizeof(double), 32);
 //
 //    _mm256_store_pd(tmp, c0123x0);
 //
-//    printdouble(tmp,4);
 //    _mm256_store_pd(tmp, c0123x1);
 //
-//    printdouble(tmp,4);
 //    _mm256_store_pd(tmp, c0123x2);
 //
-//    printdouble(tmp,4);
 //    _mm256_store_pd(tmp, c0123x3);
-//
-//    printdouble(tmp,4);
-//
+
 //    _mm_free(tmp);
 
-    _mm256_store_pd(C, c0123x0);
-    _mm256_store_pd(C + MC, c0123x1);
-    _mm256_store_pd(C + 2 * MC, c0123x2);
-    _mm256_store_pd(C + 3 * MC, c0123x3);
+    _mm256_store_pd(C, c0);
+    _mm256_store_pd(C + MC, c1);
+    _mm256_store_pd(C + 2 * MC, c2);
+    _mm256_store_pd(C + 3 * MC, c3);
 
 
 }
 
-//maybe working, currently unsure. TODO Error is probably here. unsure where at the moment. This is confirmed to be the issue.
+//works.
 void core_dyn(double *A, double *B, double *C, unsigned int M, unsigned int N, unsigned int K) {
     for (unsigned int j = 0; j < N; j++) {
         for (unsigned int i = 0; i < M; i++) {
             double cij = C[j * lda + i];
             for (int k = 0; k < K; ++k) {
-//                index 3x3
-                //00, 14, 26
-//                values 3x3
-                //11 24 37
-                //12 25 38
-                //13 26 39
-                double a = A[i + (lda) * k];
-                double b = B[k + (lda+1) * j];
-                double ab = a * b;
                 cij += A[k * lda + i] * B[j * lda + k];
             }
-            int tmp = j*MC+i;
             C[j * MC + i] += cij;
         }
     }
 }
-/*
- *
- *   for( int i = 0; i < n; i++ )
-       for( int j = 0; j < n; j++ )
-       {
-            double cij = C[i+j*n];
-            for( int k = 0; k < n; k++ )
-                 cij += A[i+k*n] * B[k+j*n];
-            C[i+j*n] = cij;
-       }
-  }
- */
 
-void naive_helper (double* A, double* B, double* C, int i, int j, int K) {
-    double cij = C[j*lda + i];
-    for (int k = 0; k < K; ++k) {
-        cij += A[k*lda + i] * B[j*lda + k];
-    }
-    C[j*MC + i] += cij;
-}
-
-
-void Prepare_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
+void Do_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
     double *B = Bblock;
     for (unsigned int n = 0; n < N; n += NR) {
         for (unsigned int m = 0; m < M; m += MR) {
@@ -259,30 +223,8 @@ void Prepare_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
             if (Max_M == MR && Max_N == NR) {
                 core_4_4(Ablock + m * K, B, Cblock + m, K);
             } else {
-                core_dyn(Ablock, B, Cblock, M, N, K);
-//                int mtmp = M;
-//                int mmaxtmp = Max_M;
-//                int ntmp = N;
-//                int nmaxtmp = Max_N;
-//                if(Max_M!=M){
-//                    for (int i=Max_M; i < M; ++i)
-//                        for (int tmp=0; tmp < N; ++tmp){
-////                            (int lda, int K, double* A, double* B, double* C, int i, int j)
-//                            naive_helper(Ablock + m * K, B, Cblock + m, i, tmp, K);
-//                        }
-//
-////
-//                }
-//                // vertical sliver + bottom right corner
-//                if(Max_N!=N){
-//                    for (int j=Max_N; j < N; ++j)
-//                        for (int tmp=0; tmp < Max_M; ++tmp)
-//                            naive_helper(Ablock + m * K, B, Cblock + m, Max_M, Max_N, K);
-////                            core_dyn(lda, K, A, B, C, tmp, j);
-//                }
-//                core_dyn(Ablock + m * K, B, Cblock + m, Max_M, Max_N, K);
+                core_dyn(Ablock + m, B, Cblock +m, M, N, K);
             }
-
         }
         B += NR * K;
         unpackCBlock(C + n * lda, M, std::min(NR, n - n));
@@ -299,7 +241,7 @@ void square_dgemm(int M, double *A, double *B, double *C) {
         packBBlock(B + k, std::min(KC, lda - k));
         for (unsigned int i = 0; i < lda; i += MC) {
             packAblock(A + i + k * lda, std::min(MC, lda - i), std::min(KC, lda - k));
-            Prepare_block(C + i, std::min(MC, lda - i), lda, std::min(KC, lda - k));
+            Do_block(C + i, std::min(MC, lda - i), lda, std::min(KC, lda - k));
         }
     }
     _mm_free(Ablock);
