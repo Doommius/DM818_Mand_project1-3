@@ -5,6 +5,7 @@
 #include <float.h>
 #include <math.h>
 #include <sys/time.h>
+#include <malloc.h>
 //NOTE: #include <acml.h> //assumes AMD platform
 extern "C" {
 #include <cblas.h> //uses general CBLAS interface
@@ -55,25 +56,25 @@ int main( int argc, char **argv )
 {
     printf ("Description:\t%s\n\n", dgemm_desc);
 
-    //
     // These sizes should highlight performance dips at multiples of certain
     // powers-of-two
     //
-    int test_sizes[] = {
-        31, 32, 96, 97, 127, 128, 129, 191, 192, 229, 255, 256, 257,
-        319, 320, 321, 417, 479, 480, 511, 512, 639, 640, 767, 768, 769,
-    };
-//
-//    int test_sizes[] = {2};
-    
-    for( int isize = 0; isize < sizeof(test_sizes)/sizeof(test_sizes[0]); isize++ )
-    {
-        int n = test_sizes[isize];
+    printf ("test\n\n");
 
+//    int test_sizes[] = {
+//        31, 32, 96, 97, 127, 128, 129, 191, 192, 229, 255, 256, 257,
+//        319, 320, 321, 417, 479, 480, 511, 512, 639, 640, 767, 768, 769};
+//
+//    int test_sizes[] = {32};
+    printf("test0");
+//    for( int isize = 0; isize < sizeof(test_sizes)/sizeof(test_sizes[0]); isize++ )
+//    {
+        int n = 31;
+        printf("test1");
         double *A = (double*) malloc( n * n * sizeof(double) );
         double *B = (double*) malloc( n * n * sizeof(double) );
         double *C = (double*) malloc( n * n * sizeof(double) );
-
+        printf("test2");
         fill( A, n * n );
         fill( B, n * n );
         fill( C, n * n );
@@ -124,10 +125,10 @@ int main( int argc, char **argv )
                 exit(-1);
             }
 
-        free( C );
-        free( B );
-        free( A );
-    }
+//        free( C );
+//        free( B );
+//        free( A );
+//    }
     
     return 0;
 }

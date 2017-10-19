@@ -212,14 +212,41 @@ void core_dyn(double *A, double *B, double *C, unsigned int M, unsigned int N, u
         for (unsigned int i = 0; i < M; i++) {
             double cij = C[j * lda + i];
             for (int k = 0; k < K; ++k) {
-                double a = A[k * lda + i];
-                double b = B[j * lda + k];
+//                index 3x3
+                //00, 14, 26
+//                values 3x3
+                //11 24 37
+                //12 25 38
+                //13 26 39
+                double a = A[i + (lda) * k];
+                double b = B[k + (lda+1) * j];
                 double ab = a * b;
                 cij += A[k * lda + i] * B[j * lda + k];
             }
-            C[j * MC + i] = cij;
+            int tmp = j*MC+i;
+            C[j * MC + i] += cij;
         }
     }
+}
+/*
+ *
+ *   for( int i = 0; i < n; i++ )
+       for( int j = 0; j < n; j++ )
+       {
+            double cij = C[i+j*n];
+            for( int k = 0; k < n; k++ )
+                 cij += A[i+k*n] * B[k+j*n];
+            C[i+j*n] = cij;
+       }
+  }
+ */
+
+void naive_helper (double* A, double* B, double* C, int i, int j, int K) {
+    double cij = C[j*lda + i];
+    for (int k = 0; k < K; ++k) {
+        cij += A[k*lda + i] * B[j*lda + k];
+    }
+    C[j*MC + i] += cij;
 }
 
 
@@ -232,7 +259,28 @@ void Prepare_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
             if (Max_M == MR && Max_N == NR) {
                 core_4_4(Ablock + m * K, B, Cblock + m, K);
             } else {
-                core_dyn(Ablock + m * K, B, Cblock + m, Max_M, Max_N, K);
+                core_dyn(Ablock, B, Cblock, M, N, K);
+//                int mtmp = M;
+//                int mmaxtmp = Max_M;
+//                int ntmp = N;
+//                int nmaxtmp = Max_N;
+//                if(Max_M!=M){
+//                    for (int i=Max_M; i < M; ++i)
+//                        for (int tmp=0; tmp < N; ++tmp){
+////                            (int lda, int K, double* A, double* B, double* C, int i, int j)
+//                            naive_helper(Ablock + m * K, B, Cblock + m, i, tmp, K);
+//                        }
+//
+////
+//                }
+//                // vertical sliver + bottom right corner
+//                if(Max_N!=N){
+//                    for (int j=Max_N; j < N; ++j)
+//                        for (int tmp=0; tmp < Max_M; ++tmp)
+//                            naive_helper(Ablock + m * K, B, Cblock + m, Max_M, Max_N, K);
+////                            core_dyn(lda, K, A, B, C, tmp, j);
+//                }
+//                core_dyn(Ablock + m * K, B, Cblock + m, Max_M, Max_N, K);
             }
 
         }
@@ -255,6 +303,6 @@ void square_dgemm(int M, double *A, double *B, double *C) {
         }
     }
     _mm_free(Ablock);
-//    free(Bblock);
+    free(Bblock);
     _mm_free(Cblock);
 }
