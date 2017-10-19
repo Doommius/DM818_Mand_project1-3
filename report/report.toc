@@ -1,0 +1,23 @@
+\select@language {english}
+\contentsline {section}{Project description}{1}
+\contentsline {section}{Introduction}{2}
+\contentsline {subsection}{Work load}{2}
+\contentsline {subsection}{Issues}{2}
+\contentsline {section}{Design}{2}
+\contentsline {subsection}{Advice from lecturer}{2}
+\contentsline {subsection}{Own design choices}{2}
+\contentsline {subsubsection}{Cache}{2}
+\contentsline {subsubsection}{Intrinsic}{3}
+\contentsline {section}{Implementation}{4}
+\contentsline {subsection}{Square-dgemm}{4}
+\contentsline {subsection}{Blocking functions}{4}
+\contentsline {subsection}{do-block}{4}
+\contentsline {subsection}{Core-dyn}{5}
+\contentsline {subsection}{Core-4x4}{5}
+\contentsline {section}{Testing}{5}
+\contentsline {section}{Comparison}{5}
+\contentsline {section}{Conclusion}{5}
+\contentsline {section}{appendix}{6}
+\contentsline {subsection}{Goto paper }{6}
+\contentsline {subsection}{Valgrind result and stackoverflow post}{6}
+\contentsline {section}{Code}{6}
