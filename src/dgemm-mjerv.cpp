@@ -61,6 +61,27 @@ double *Cblock;
 //  |                         |   |                         |
 //  +-------------------------+   +-------------------------+
 
+void printMatrix2(double *matrix, int MatrixSize) {
+    std::cout << ("Starting Matrix") << '\n';
+    for (int i = 0; i < MatrixSize * MatrixSize; i++) {
+        std::cout << matrix[i] << ' ';
+        if ((i + 1) % MatrixSize == 0) {
+            printf("\n");
+        }
+    }
+    std::cout << ("Ending matrix") << '\n';
+}
+
+void printdouble(char *text, double *X, int arraySize) {
+    std::cout << text << '\n';
+    for (int i = 0; i < arraySize; i++) {
+        double a = X[i];
+
+        std::cout << a << ' ';
+    }
+    std::cout << '\n';
+}
+
 
 void packAblock(double *A, unsigned int M, unsigned int K) {
     unsigned int a = 0;
@@ -83,128 +104,148 @@ void packBBlock(double *B, unsigned int K) {
         }
     }
 }
+
+
+//TODO currently broken
 void unpackCBlock(double *C, unsigned int M, unsigned int N) {
-    unsigned int c = 0;
-    for (unsigned int n = 0; n < lda; n++) {
-        for (unsigned int m = 0; m < lda; m++) {
-            C[c++] = Cblock[m + n * lda];
+//    printMatrix2(Cblock,4 );
+    for (unsigned int n = 0; n < NR; n++) {
+        for (unsigned int i = 0; i < M; i++) {
+            int lookingat = i + n * MC;
+            int storeingat = i + n * lda;
+            double x = Cblock[lookingat];
+            C[i + n * lda] = Cblock[i + n * MC];
         }
     }
 }
-
-
-//void printArray(double array[], int arraySize) {
-//    for (int i = 0; i < arraySize; i++) {
-//        std::cout << array[i] << ' ';
-//    }
-//    std::cout << '\n';
-//}
 
 
 //This is pretty what much Jacob did, except i wrote it with AVX2
 //He said we should let the compiler take care of how to handle this. eg.
 // __m256d c01x0-3 could be written as __m256d c23 = _mm_set_pd(0.0,0.0,0.0,0.0); and same goes for most of this function.
-void core_4_4(double *A,double *B,double *C, unsigned int K){
-    __m256d c01x0 = _mm256_setzero_pd();
-    __m256d c23x0 = _mm256_setzero_pd();
-    __m256d c01x1 = _mm256_setzero_pd();
-    __m256d c23x1 = _mm256_setzero_pd();
-    __m256d c01x2 = _mm256_setzero_pd();
-    __m256d c23x2 = _mm256_setzero_pd();
-    __m256d c01x3 = _mm256_setzero_pd();
-    __m256d c23x3 = _mm256_setzero_pd();;
+void core_4_4(double *A, double *B, double *C, unsigned int K) {
+//     std::cout << "K is = " << K << '\n';
+    __m256d c0123x0 = _mm256_setzero_pd();
+    __m256d c0123x1 = _mm256_setzero_pd();
+    __m256d c0123x2 = _mm256_setzero_pd();
+    __m256d c0123x3 = _mm256_setzero_pd();
+
+    for (unsigned int k = 0; k < K - 1; k += 2) {
+//        printdouble(A+k*MR,4);
+//        printdouble(A+(2+k)*MR,4);
+
+        __m256d a0123k0 = _mm256_load_pd(A + k * MR);
+//        printdouble("A0123k0",A + (k) * MR, 4);
+
+        __m256d a0123k1 = _mm256_load_pd(A + (k + 1) * MR);
+
+//        printdouble("A0123k1",A+ (k+1) * MR, 4);
+
+        __m256d b0x0 = _mm256_set1_pd(B[k]);
+        __m256d b0x1 = _mm256_set1_pd(B[k + K]);
+        __m256d b0x2 = _mm256_set1_pd(B[k + K * 2]);
+        __m256d b0x3 = _mm256_set1_pd(B[k + K * 3]);
+
+        __m256d b1x0 = _mm256_set1_pd(B[k + 1]);
+        __m256d b1x1 = _mm256_set1_pd(B[k + K + 1]);
+        __m256d b1x2 = _mm256_set1_pd(B[k + K * 2 + 1]);
+        __m256d b1x3 = _mm256_set1_pd(B[k + K * 3 + 1]);
+
+        //do left
+        c0123x0 = _mm256_add_pd(c0123x0, _mm256_mul_pd(b0x0, a0123k0));
+        c0123x1 = _mm256_add_pd(c0123x1, _mm256_mul_pd(b0x1, a0123k0));
+        c0123x2 = _mm256_add_pd(c0123x2, _mm256_mul_pd(b0x2, a0123k0));
+        c0123x3 = _mm256_add_pd(c0123x3, _mm256_mul_pd(b0x3, a0123k0));
+
+        c0123x0 = _mm256_add_pd(c0123x0, _mm256_mul_pd(b1x0, a0123k1));
+        c0123x1 = _mm256_add_pd(c0123x1, _mm256_mul_pd(b1x1, a0123k1));
+        c0123x2 = _mm256_add_pd(c0123x2, _mm256_mul_pd(b1x2, a0123k1));
+        c0123x3 = _mm256_add_pd(c0123x3, _mm256_mul_pd(b1x3, a0123k1));
 
 
-    for (unsigned int k = 0; k<K; k++){
-        __m256d a01k = _mm256_load_pd(A+k*MR);
-        __m256d a23k = _mm256_load_pd(A+2+k*MR);
-
-        __m256d t1, t2;
-
-        t1 = _mm256_set1_pd(B[k]);
-        t2 = t1;
-        t1 = _mm256_mul_pd(t1, a01k);
-        c01x0 = _mm256_add_pd(c01x0, t1);
-        t2 = _mm256_mul_pd(t2, a23k);
-        c23x0 = _mm256_add_pd(c23x0, t2);
-
-        t1 = _mm256_set1_pd(B[k+K]);
-        t2 = t1;
-        t1 = _mm256_mul_pd(t1, a01k);
-        c01x1 = _mm256_add_pd(c01x1, t1);
-        t2 = _mm256_mul_pd(t2, a23k);
-        c23x1 = _mm256_add_pd(c23x1, t2);
-
-        t1 = _mm256_set1_pd(B[k+2*K]);
-        t2 = t1;
-        t1 = _mm256_mul_pd(t1, a01k);
-        c01x2 = _mm256_add_pd(c01x2, t1);
-        t2 = _mm256_mul_pd(t2, a23k);
-        c23x2 = _mm256_add_pd(c23x2, t2);
-
-        t1 = _mm256_set1_pd(B[k+3*K]);
-        t2 = t1;
-        t1 = _mm256_mul_pd(t1, a01k);
-        c01x3 = _mm256_add_pd(c01x3, t1);
-        t2 = _mm256_mul_pd(t2, a23k);
-        c23x3 = _mm256_add_pd(c23x3, t2);
     }
-    _mm256_store_pd(C, c01x0);
-    _mm256_store_pd(C+2, c23x0);
+    if (K % 2 == 1) {
+        unsigned int k = K - 1;
+        __m256d a0123k0 = _mm256_load_pd(A + k * MR);
 
-    _mm256_store_pd(C+MC, c01x0);
-    _mm256_store_pd(C+2+MC, c23x0);
+        __m256d b0x0 = _mm256_set1_pd(B[k]);
+        __m256d b0x1 = _mm256_set1_pd(B[k + K]);
+        __m256d b0x2 = _mm256_set1_pd(B[k + K * 2]);
+        __m256d b0x3 = _mm256_set1_pd(B[k + K * 3]);
 
-    _mm256_store_pd(C+2*MC, c01x0);
-    _mm256_store_pd(C+2+2*MC, c23x0);
+        c0123x0 = _mm256_add_pd(c0123x0, _mm256_mul_pd(b0x0, a0123k0));
+        c0123x1 = _mm256_add_pd(c0123x1, _mm256_mul_pd(b0x1, a0123k0));
+        c0123x2 = _mm256_add_pd(c0123x2, _mm256_mul_pd(b0x2, a0123k0));
+        c0123x3 = _mm256_add_pd(c0123x3, _mm256_mul_pd(b0x3, a0123k0));
+    }
 
-    _mm256_store_pd(C+3*MC, c01x0);
-    _mm256_store_pd(C+2+3*MC, c23x0);
+
+    //TODO something is broken here.
+//    double *tmp = (double *) _mm_malloc(NR * sizeof(double), 32);
+//
+//    _mm256_store_pd(tmp, c0123x0);
+//
+//    printdouble(tmp,4);
+//    _mm256_store_pd(tmp, c0123x1);
+//
+//    printdouble(tmp,4);
+//    _mm256_store_pd(tmp, c0123x2);
+//
+//    printdouble(tmp,4);
+//    _mm256_store_pd(tmp, c0123x3);
+//
+//    printdouble(tmp,4);
+//
+//    _mm_free(tmp);
+
+    _mm256_store_pd(C, c0123x0);
+    _mm256_store_pd(C + MC, c0123x1);
+    _mm256_store_pd(C + 2 * MC, c0123x2);
+    _mm256_store_pd(C + 3 * MC, c0123x3);
+
 
 }
 
-//maybe working, currently unsure.
-void core_dyn(double *A,double *B,double *C, unsigned int M,unsigned int N,unsigned int K){
-    for(unsigned int j = 0; j < N; j++){
-        for (unsigned int i; i < M; i++){
-            double cij = C[j*lda + i];
+//maybe working, currently unsure. TODO Error is probably here. unsure where at the moment. This is confirmed to be the issue.
+void core_dyn(double *A, double *B, double *C, unsigned int M, unsigned int N, unsigned int K) {
+    for (unsigned int j = 0; j < N; j++) {
+        for (unsigned int i = 0; i < M; i++) {
+            double cij = C[j * lda + i];
             for (int k = 0; k < K; ++k) {
-                cij += A[k*lda + i] * B[j*lda + k];
+                double a = A[k * lda + i];
+                double b = B[j * lda + k];
+                double ab = a * b;
+                cij += A[k * lda + i] * B[j * lda + k];
             }
-            C[j*lda + i] = cij;
+            C[j * MC + i] = cij;
         }
     }
 }
-
-
-void do_sub_block(double *A, double *B, double *C, unsigned int K, unsigned X, unsigned Y) {
-
-};
 
 
 void Prepare_block(double *C, unsigned int M, unsigned int N, unsigned int K) {
     double *B = Bblock;
     for (unsigned int n = 0; n < N; n += NR) {
-        for (unsigned int m = 0; m < M; n += MR) {
+        for (unsigned int m = 0; m < M; m += MR) {
             unsigned int Max_M = std::min(NR, M - m);
             unsigned int Max_N = std::min(MR, N - n);
-            if (Max_M == MR && Max_N == NR){
-                core_4_4(Ablock+m*K, B, Cblock+m,K);
-            }else{
-                core_dyn(Ablock+m*K,B,Cblock+m, Max_M, Max_N,K);
+            if (Max_M == MR && Max_N == NR) {
+                core_4_4(Ablock + m * K, B, Cblock + m, K);
+            } else {
+                core_dyn(Ablock + m * K, B, Cblock + m, Max_M, Max_N, K);
             }
 
         }
-        B+= NR*K;
-        unpackC(C+n*lda, M, std::min(NR, n-n));
+        B += NR * K;
+        unpackCBlock(C + n * lda, M, std::min(NR, n - n));
     }
 }
 
 void square_dgemm(int M, double *A, double *B, double *C) {
     lda = M;
-    Ablock = (double *) _mm_malloc(MC * KC * sizeof(double), 16); //128*128
+    Ablock = (double *) _mm_malloc(MC * KC * sizeof(double), 32); //128*128
     Bblock = (double *) malloc(lda * KC * sizeof(double)); // M * 128
-    Cblock = (double *) _mm_malloc(MC * NR * sizeof(double), 16); //128*4
+    Cblock = (double *) _mm_malloc(MC * NR * sizeof(double), 32); //128*4
 
     for (unsigned int k = 0; k < lda; k += KC) {
         packBBlock(B + k, std::min(KC, lda - k));
@@ -214,6 +255,6 @@ void square_dgemm(int M, double *A, double *B, double *C) {
         }
     }
     _mm_free(Ablock);
-    free(Bblock);
+//    free(Bblock);
     _mm_free(Cblock);
 }
