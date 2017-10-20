@@ -6,7 +6,7 @@
 \contentsline {section}{Design}{2}
 \contentsline {subsection}{Advice from lecturer}{2}
 \contentsline {subsection}{Own design choices}{2}
-\contentsline {subsubsection}{Cache}{2}
+\contentsline {subsubsection}{Block size and Cache}{2}
 \contentsline {subsubsection}{Intrinsic}{3}
 \contentsline {section}{Implementation}{4}
 \contentsline {subsection}{Square-dgemm}{4}
@@ -19,5 +19,5 @@
 \contentsline {section}{Conclusion}{5}
 \contentsline {section}{appendix}{6}
 \contentsline {subsection}{Goto paper }{6}
-\contentsline {subsection}{Valgrind result and stackoverflow post}{6}
+\contentsline {subsection}{Error, Valgrind result and stack overflow post }{6}
 \contentsline {section}{Code}{6}

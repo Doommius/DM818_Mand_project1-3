@@ -76,7 +76,7 @@
 	\huge    
     Parallel Computing (DM818)  \\[4\baselineskip]
     \normalfont
-	\includegraphics[scale=1]{SDU_Logo}
+	\includegraphics[scale=1]{SDU_logo}
     \vfill\ 
     \vspace{5mm}
     IMADA \\
@@ -102,35 +102,35 @@ customized and how they boot\\
 This report contains documentation for the first mandatory assignment for DM818 Parallel Computing, in the first assignment we were tasked with designing a high performance singled threaded matrix matrix multiplication program.
 
 \subsection{Work load}
-For the following projected i ended up working alone as i didn't really know anyone in the course as I'm a bachelor student, the people i knew from other courses were already in groups. 
+For the following projected i ended up working alone as i didn't really know anyone in the course as I'm a bachelor student, the people i knew from other courses were already in groups and the remainder that i talked to were phds as were not allowed to form groups. 
 
 \subsection{Issues}
-There is currently a bug with the freeing the memory allocation in the program, this means that the program will work one iteration. I've tried bugging with gdb and Valgrind, but i haven't been able to figure out what the bug is yet. but i assume it's a overflow, or our of place memory happening in the B Array, see the appendix for Valgrind and a link to a post on stack overflow which could be the same as the issue I'm experiencing. 
+There is currently a bug with the freeing the memory allocation, this means that the program will work one iteration. I've tried debugging with gdb and Valgrind, but i haven't been able to figure out where the bug is yet. I assume it's an overflow, or an out of place memory happening in the B Array.
 
 
 \section{Design}
 \subsection{Advice from lecturer}
-For the designing the algorithm we were given 2 examples of how its normally naively implemented, a naive 3 for loop implementation, and a naive blocked version. \\ \vspace{5mm}
-Furthermore we were pointed heavy towards the Goto paper on high performance matrix multiplication, which describes how you should design the blocking for the best possible performance. \\ \vspace{5mm}
-and as a third pointer we were given a lecture by Jacob who explained how he implemented it, and what we should do to get the highest performance,
+For designing the algorithm we were given 2 examples of how its naively implemented, a naive 3 for loop implementation, and a naive blocked version. \\ \vspace{5mm}
+Furthermore we were pointed heavy towards the a paper by Goto on high performance matrix multiplication, which describes how you should design the blocking for the best possible performance. \\ \vspace{5mm}
+and as a third helping hand we were given a lecture by Jacob who explained how he implemented it, and what we should do to get the highest performance.
 \subsection{Own design choices}
 
-I made a design choice follow Jacobs implementation. this meant writing functions that pack the larger matrix into smaller sub-matrices that are then used for the matrix matrix multiplication. \\
-\subsubsection{Cache}
-For figuring out the block size i calculated the largest n by n matrix possible,
+I made the design choice to follow Jacobs implementation. this meant writing functions that pack the larger matrix into smaller sub-matrices that are then used for the matrix matrix multiplication. \\
+\subsubsection{Block size and Cache}
+For figuring out the block size, the size of the largest possible matrix that can fit in level 2 cache was calculated.
 \begin{equation}
 sqr((256*1024 byte)/64 bit) = 181.019335984
 \end{equation}
-as 181 isn't a good size when handing matrix blocking, i rounded down to nearest $2^n$ which is 128.
+181 isn't a good size when handing matrix blocking, The number is therefore rounded down to nearest $2^n$ which is 128.
 \begin{equation}
 128 * 128 * 64 bit = 128 Kbytes
 \end{equation}
-We were also shown a equation to solve this. its 
+An equation to solve this was also shown doing the lecture. The this is used the 128 by 128 for the main matrix, and 4 by 128 for the remaining. 
 \begin{equation}
 8* (m_c*k_c+m_c*n_c+N_c*k_c) = 8* (128*128+128*4+4*128) = 139264 bytes ~ 136 Kbytes
 \end{equation}
-The reasoning for that we shouldn't use blocks larger then the cache is that we'll be fetching our data from main memory more often will will induce 100s or 1000s fold slowdown in execution time.\\
-\newpage
+After doing the calculations we can see that the program will need at least 136 KByte of cache to store the data needed. level2 cache in most modern cpu's is 256 KB, so this will suffice. A reason for not pushing it a using maybe a 256 by 128 block will mean that all 256 KB of the level2 cache would be used by the main matrix, this could cause some severed trotting issues due to it being pushed to level3 cache or main memory..\\
+ 
 \subsubsection{Intrinsic}
 I only decided on only implementing intrinsic for a core of 4x4, and just using a naive for loop implementation for the smaller blocks, as programming all the possible different blocks alone would take too much time.\\ 
 \vspace{5mm}
@@ -175,7 +175,7 @@ There are too many different functions to list so I'll only list the ones i have
 \subsection{Square-dgemm}
 
 The initial function square\_dgemm gets the 3 matrices and M in as the 4 arguments. M is directly saved as a global variable. \\
-3 sub matrices are then reserved, Ablock, Bblock, and C, block. Ablock and Cblock and allocated in a way that is aligned in memory by 32-bytes. this is done so the intrinsic instructions will run faster. \\ \vspace{5mm}
+3 sub matrices are then reserved, Ablock, Bblock, and C, block. Ablock and Cblock and allocated in a way that is aligned in memory by 32-bytes. this is done so the intrinsic instructions will run faster when storing or loading information. \\ \vspace{5mm}
 
 The first for loop blocks B into blocks of of size KC * M(128 * size of matrix). The second for loop blocks A into blocks of 128 by 128 so we keep as much of A in cache as possible. \\
 
@@ -253,7 +253,7 @@ The comparison of the 3 implementations we were given.
 %\includegraphics[scale=0.3]{mflops}
 
 
-\includegraphics[scale=0.3]{procentage}
+\includegraphics[scale=0.3]{Procentage}
 
 \section{Conclusion}
 The Matrix matrix multiplication assignment proved to be a bit harder than anticipated. I thought I had it working, but found out with 2 days left that there was an error i was unable to find. I did however get to learn a lot of new things, and i got to get better at using the tools for debugging and finding out where the issue in the code is. furthermore I've learned how use intrinsic and how it can boost a programs run time by a large factor.
@@ -262,10 +262,12 @@ The Matrix matrix multiplication assignment proved to be a bit harder than antic
 \section{appendix}
 \subsection{Goto paper }
 https://dl.acm.org/citation.cfm?id=1356053 \\
-\subsection{Valgrind result and stackoverflow post}
+\subsection{Error, Valgrind result and stack overflow post }
 
 \begin{lstlisting}
-https://stackoverflow.com/questions/2334352/why-do-i-get-a-sigabrt-here
+*** Error in `./benchmark-dgemm': munmap_chunk(): invalid pointer: 0x0000000000eca9b0 ***
+benchmark-dgemm: malloc.c:2405: sysmalloc: Assertion `(old_top == initial_top (av) && old_size == 0) || ((unsigned long) (old_size) >= MINSIZE && prev_inuse (old_top) && ((unsigned long) old_end & (pagesize - 1)) == 0)' failed.
+
 
 ==13219== Your program just tried to execute an instruction that Valgrind
 ==13219== did not recognise.  There are two possible reasons for this.
@@ -277,6 +279,8 @@ https://stackoverflow.com/questions/2334352/why-do-i-get-a-sigabrt-here
 ==13219==    you are not sure, please let us know and we'll try to fix it.
 ==13219== Either way, Valgrind will now raise a SIGILL signal which will
 ==13219== probably kill your program.
+
+https://stackoverflow.com/questions/2987207/why-do-i-get-a-c-malloc-assertion-failure
 \end{lstlisting}
 
 
@@ -341,40 +345,6 @@ Make function for each size of slices..
 128 = 4.4 
 256 = 8.4 
 512 = 8.8
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \end{document}
