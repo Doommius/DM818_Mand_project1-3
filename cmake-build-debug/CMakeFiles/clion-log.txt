@@ -1,17 +1,1 @@
-/home/jervelund/Downloads/clion-2016.2.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/jervelund/ClionProjects/DM818
--- Configuring done
-CMake Error at CMakeLists.txt:22 (add_executable):
-  Cannot find source file:
-
-    /mandatory2/src/common.cpp
-
-  Tried extensions .c .C .c++ .cc .cpp .cxx .m .M .mm .h .hh .h++ .hm .hpp
-  .hxx .in .txx
-
-
-CMake Error: CMake can not determine linker language for target: Particle_serial_opti
-CMake Error: Cannot determine link language for target "Particle_serial_opti".
-CMake Error: CMake can not determine linker language for target: Particle_serial
-CMake Error: Cannot determine link language for target "Particle_serial".
--- Generating done
--- Build files have been written to: /home/jervelund/ClionProjects/DM818/cmake-build-debug
+Environment (MinGW/Cygwin) is not selected

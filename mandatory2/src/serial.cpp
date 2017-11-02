@@ -39,7 +39,7 @@ int main( int argc, char **argv )
     //  simulate a number of time steps
     //
     double simulation_time = read_timer( );
-	
+	setup_grid:
     for( int step = 0; step < NSTEPS; step++ )
     {
 	navg = 0;

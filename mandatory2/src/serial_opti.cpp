@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
         //  compute forces
         //
         for (int i = 0; i < n; i++) {
+            
             particles[i].ax = particles[i].ay = 0;
             for (int j = 0; j < n; j++)
                 apply_force(particles[i], particles[j], &dmin, &davg, &navg);

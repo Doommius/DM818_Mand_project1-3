@@ -19,5 +19,9 @@ set(SOURCE_FILES_mand2_serial mandatory2/src/serial.cpp /mandatory2/src/common.c
 add_executable(Particle_serial ${SOURCE_FILES_mand2_serial})
 
 
-set(SOURCE_FILES_mand2_serial_opti mandatory2/src/serial_opti.cpp /mandatory2/src/common.cpp /mandatory2/src/common.h)
+set(SOURCE_FILES_mand2_serial_opti mandatory2/src/serial_opti.cpp /mandatory2/src/common.cpp /mandatory2/src/common.h mandatory2/src/grid.cpp mandatory2/src/grid.h)
 add_executable(Particle_serial_opti ${SOURCE_FILES_mand2_serial_opti})
+
+
+
+
