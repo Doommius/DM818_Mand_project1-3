@@ -1,0 +1,154 @@
+%Template by Mark Jervelund - 2015 - mjerv15@student.sdu.dk
+
+\documentclass[a4paper,10pt,titlepage]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[document]{ragged2e}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage{datenumber}
+\usepackage{venndiagram}
+\usepackage{chngcntr}
+\setdatetoday
+\addtocounter{datenumber}{0} %date for dilierry standard is today
+\setdatebynumber{\thedatenumber}
+\date{}
+\setcounter{secnumdepth}{0}
+\pagestyle{fancy}
+\fancyhf{}
+
+\newcommand{\Z}{\mathbb{Z}}
+\lhead{Computer Architecture (DM548))}
+\rhead{Mark Jervelund (Mjerv15)}
+\rfoot{Page  \thepage \, of \pageref{LastPage}}
+\counterwithin*{equation}{section}
+
+\begin{document}
+\renewcommand{\thepage}{\roman{page}}% Roman numerals for page counter
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+\renewcommand{\thepage}{\arabic{page}}
+\section{Project description}
+To describe the services an operating system provides to
+users, processes, and other systems\\
+To discuss the various ways of structuring an operating
+system\\
+To explain how operating systems are installed and
+customized and how they boot\\
+\newpage
+
+\section{Introduction}
+
+
+
+\section{Design}
+
+
+
+
+
+
+\section{appendix}
+\begin{lstlisting}
+ https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=AVX_512&cats=Elementary%20Math%20Functions,Load 
+	
+https://www.codeproject.com/Articles/874396/Crunching-Numbers-with-AVX-and-AVX
+
+_mm<bit_width>_<name>_<data_type> 
+
+The parts of this format are given as follows:
+
+<bit_width> identifies the size of the vector returned by the function. For 128-bit vectors, this is empty. For 256-bit vectors, this is set to 256.
+
+<name> describes the operation performed by the intrinsic
+<data_type> identifies the data type of the function's primary arguments
+
+
+Data Type	Description
+__m128i	128-bit vector containing 8 integers
+__m128	128-bit vector containing 4 floats
+__m128d	128-bit vector containing 2 doubles
+__m256i	256-bit vector containing 16 integers
+__m256	256-bit vector containing 8 floats
+__m256d	256-bit vector containing 4 doubles
+__m512i	512-bit vector containing 32 integers
+__m512	512-bit vector containing 16 floats
+__m512d	512-bit vector containing 8 doubles
+
+
+
+ps - vectors contain floats (ps stands for packed single-precision)
+pd - vectors contain doubles (pd stands for packed double-precision)
+epi8/epi16/epi32/epi64 - vectors contain 8-bit/16-bit/32-bit/64-bit signed integers
+epu8/epu16/epu32/epu64 - vectors contain 8-bit/16-bit/32-bit/64-bit unsigned integers
+si128/si256 - unspecified 128-bit vector or 256-bit vector
+m128/m128i/m128d/m256/m256i/m256d - identifies input vector types when they're different than the type of the returned vector
+
+\end{lstlisting}
+
+\section{notes from lecture with Jakob}
+
+Our cache use, calculate it to be = to 256 or maybe a bit less.
+$kc and mc should be large. n_c is less important.$
+kc = 128 MC = 128, 
+$8* (m_c*k_c+m_c*n_c+N_c+k_c)$
+
+
+$avx_256 registers are called ymm0 to 15$
+$avx_512 registers are called zmm0 to 31$
+
+
+Make function for each size of slices..
+128 = 4.4 
+256 = 8.4 
+512 = 8.8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

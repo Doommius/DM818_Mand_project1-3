@@ -1,19 +1,32 @@
 //
-// Created by jervelund on 10/23/17.
+// Created by jervelund on 11/11/17.
 //
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 #include <math.h>
+#include <algorithm>
+#include <assert.h>
+#include <unordered_map>
+#include <ostream>
+#include <iostream>
+
 #include "common.h"
+#include "grid.h"
+#include "serial.h"
+
+// Used to account for time spent
+std::unordered_map<std::string, double> profiling;
 
 //
 //  benchmarking program
 //
+int maxRows = 0;
+
 int main(int argc, char **argv) {
-    int navg, nabsavg = 0;
-    double davg, dmin, absmin = 1.0, absavg = 0.0;
+    int navg, nabsavg=0;
+    double dmin, absmin=1.0,davg,absavg=0.0;
+    double rdavg,rdmin;
+    int rnavg;
 
     if (find_option(argc, argv, "-h") >= 0) {
         printf("Options:\n");
@@ -27,6 +40,8 @@ int main(int argc, char **argv) {
 
     int n = read_int(argc, argv, "-n", 1000);
 
+    n = 1000;
+
     char *savename = read_string(argc, argv, "-o", NULL);
     char *sumname = read_string(argc, argv, "-s", NULL);
 
@@ -37,37 +52,49 @@ int main(int argc, char **argv) {
     set_size(n);
     init_particles(n, particles);
 
+
+    /**
+     * setup and add elements to grid, move move to its own function.
+     */
+    grid_init(sqrt(0.0005 * n) / 0.01);
+
+    for (int i = 0; i < n; i++) {
+        grid_Add(&particles[i]);
+    }
     //
     //  simulate a number of time steps
     //
-    double simulation_time = read_timer();
 
+
+    double simulation_time = read_timer();
     for (int step = 0; step < NSTEPS; step++) {
-        navg = 0;
-        davg = 0.0;
-        dmin = 1.0;
         //
         //  compute forces
         //
         for (int i = 0; i < n; i++) {
-            
             particles[i].ax = particles[i].ay = 0;
-            for (int j = 0; j < n; j++)
-                apply_force(particles[i], particles[j], &dmin, &davg, &navg);
+
+            for (int row = -1; row < 1; row++) {
+                for (int column = -1; column <= 1; column++) {
+                    const std::vector<particle_t *> &cell =
+                            gridGetCollisionsAtNeighbor(&particles[i], row, column);
+                    for (auto particle : cell) {
+                        apply_force( particles[i], *particle, &dmin, &davg, &navg );
+                    }
+
+                }
+            }
+
         }
 
-        //
-        //  move particles
-        //
-        for (int i = 0; i < n; i++)
-            move(particles[i]);
 
-        if (find_option(argc, argv, "-no") == -1) {
+        if( find_option( argc, argv, "-no" ) == -1 )
+        {
             //
             // Computing statistical data
             //
             if (navg) {
-                absavg += davg / navg;
+                absavg +=  davg/navg;
                 nabsavg++;
             }
             if (dmin < absmin) absmin = dmin;
@@ -75,8 +102,31 @@ int main(int argc, char **argv) {
             //
             //  save if necessary
             //
-            if (fsave && (step % SAVEFREQ) == 0)
-                save(fsave, n, particles);
+            if( fsave && (step%SAVEFREQ) == 0 )
+                save( fsave, n, particles );
+        }
+        //
+        //  move particles
+        //
+        for (int i = 0; i < n; i++) {
+            int coordinate = grid_GetParticleCoordinate(&particles[i]);
+            grid_Remove(&particles[i]);
+            move(particles[i]);
+            grid_Add(&particles[i]);
+            int newCoordinate = grid_GetParticleCoordinate(&particles[i]);
+            if (abs(coordinate - newCoordinate) > gridsize) {
+                int i1 = abs(coordinate - newCoordinate) / gridsize;
+//                printf("Moved %d cells (From %d to %d [%d rows])\n", abs(coordinate - newCoordinate), coordinate,
+//                       newCoordinate, i1);
+                if (i1 > maxRows) maxRows = i1;
+            }
+        }
+
+        //  save if necessary
+        if (fsave && (step % SAVEFREQ) == 0) {
+//            BEGIN_TIMED_ZONE(saveLocalResult);
+            save(fsave, n, particles);
+//            END_TIMED_ZONE(saveLocalResult);
         }
     }
     simulation_time = read_timer() - simulation_time;
