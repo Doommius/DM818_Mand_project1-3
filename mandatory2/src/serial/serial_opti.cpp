@@ -12,7 +12,7 @@
 
 #include "common.h"
 #include "grid.h"
-#include "serial.h"
+#include "openmp_opti.h"
 
 // Used to account for time spent
 std::unordered_map<std::string, double> profiling;

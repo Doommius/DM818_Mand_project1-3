@@ -52,7 +52,7 @@ int main( int argc, char **argv )
         {
             particles[i].ax = particles[i].ay = 0;
             for (int j = 0; j < n; j++ )
-                apply_force( particles[i], *particle, &dmin, &davg, &navg );
+                apply_force( particles[i], particles[j], &dmin, &davg, &navg );
         }
  
         //

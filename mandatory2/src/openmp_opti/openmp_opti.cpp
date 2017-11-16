@@ -2,15 +2,12 @@
 //#include <stdio.h>
 #include <cstdlib>
 #include <cstdio>
-#include <cassert>
-//#include <assert.h>
-//#include <math.h>
 #include <cmath>
 #include <unordered_map>
 
-
 #include "common.h"
 #include "grid.h"
+#include "omp.h"
 
 //double starttimer;
 //double endtimer;
@@ -23,7 +20,7 @@
 //
 int main(int argc, char **argv) {
 
-    int navg, nabsavg = 0;
+    int navg, nabsavg = 0, numthreads = 0;
     double davg, dmin, absmin = 1.0, absavg = 0.0;
 
     if (find_option(argc, argv, "-h") >= 0) {
@@ -37,6 +34,7 @@ int main(int argc, char **argv) {
     }
 
     int n = read_int(argc, argv, "-n", 1000);
+//    n = 100;
 
     char *savename = read_string(argc, argv, "-o", NULL);
     char *sumname = read_string(argc, argv, "-s", NULL);
@@ -44,8 +42,7 @@ int main(int argc, char **argv) {
     FILE *fsave = savename ? fopen(savename, "w") : NULL;
     FILE *fsum = sumname ? fopen(sumname, "a") : NULL;
 
-    particle_t *particles = (particle_t *) malloc(n * sizeof(particle_t));
-
+    auto *particles = (particle_t *) malloc(n * sizeof(particle_t));
     set_size(n);
     init_particles(n, particles);
 
@@ -65,74 +62,91 @@ int main(int argc, char **argv) {
     //
     double simulation_time = read_timer();
 
+#pragma omp parallel
+    {
+        if (omp_get_thread_num() == 0){
+            numthreads = omp_get_num_threads();
+        };
 
-    for (int step = 0; step < NSTEPS; step++) {
+        for (int step = 0; step < NSTEPS; step++) {
+//            printf("at step %i \n",step);
+
+            navg = 0;
+            davg = 0.0;
+            dmin = 1.0;
+            //
+            //  compute forces
+            //
+//            starttimer = read_timer();
+//            printf("apply force \n");
+//#pragma omp barrier
+#pragma omp for
+            for (int i = 0; i < n; i++) {
+                particles[i].ax = particles[i].ay = 0;
+                for (int j = -1; j <= 1; j++) {
+                    for (int k = -1; k <= 1; k++) {
+                        const std::vector<particle_t *> &cell = gridGetCollisionsAtNeighbor(&particles[i], j, k);
+                        for (particle_t *particle : cell) {
+                            apply_force(particles[i], *particle, &dmin, &davg, &navg);
+
+                        }
 
 
-        navg = 0;
-        davg = 0.0;
-        dmin = 1.0;
-        //
-        //  compute forces
-        //
-//        starttimer = read_timer();
-        for (int i = 0; i < n; i++) {
-            particles[i].ax = particles[i].ay = 0;
-            for (int j = -1; j <= 1; j++) {
-                for (int k = -1; k <= 1; k++) {
-                    const std::vector<particle_t *> &cell = gridGetNeighbors(&particles[i], j, k);
-                    for (particle_t *particle : cell) {
-                        apply_force(particles[i], *particle, &dmin, &davg, &navg);
                     }
-
 
                 }
 
             }
+//            endtimer = read_timer();
+//            applyforcetimer += endtimer - starttimer;
 
-        }
-//        endtimer = read_timer();
-//        applyforcetimer += endtimer - starttimer;
-
-        //
-        //  move particles
-        // Seems to work correctly when using purge, but breaks with using remove.
-        //
-
-//        starttimer = read_timer();
-
-        //The purge should be outside the for loop... -_-
-        grid_clear();
-        for (int i = 0; i < n; i++) {
-//            grid_remove(&particles[i]);
-
-            move(particles[i]);
-            grid_add(&particles[i]);
-        }
-//        endtimer = read_timer();
-//        movetimer += endtimer - starttimer;
-
-
-        if (find_option(argc, argv, "-no") == -1) {
             //
-            // Computing statistical data
+            //  move particles
+            // Seems to work correctly when using purge, but breaks with using remove.
             //
-            if (navg) {
-                absavg += davg / navg;
-                nabsavg++;
+
+//            starttimer = read_timer();
+
+
+//#pragma omp single
+//            grid_purge();
+
+#pragma omp single
+            for (int i = 0; i < n; i++) {
+                grid_remove(&particles[i]);
+
+                move(particles[i]);
+                grid_add(&particles[i]);
+
             }
-            if (dmin < absmin) absmin = dmin;
+//            endtimer = read_timer();
+//            movetimer += endtimer - starttimer;
 
-            //
-            //  save if necessary
-            //
-            if (fsave && (step % SAVEFREQ) == 0)
-                save(fsave, n, particles);
+
+            if (find_option(argc, argv, "-no") == -1) {
+                //
+                // Computing statistical data
+                //
+#pragma omp master
+                if (navg) {
+                    absavg += davg / navg;
+                    nabsavg++;
+                }
+#pragma omp critical
+                if (dmin < absmin) absmin = dmin;
+
+                //
+                //  save if necessary
+                //
+#pragma omp master
+                if (fsave && (step % SAVEFREQ) == 0)
+                    save(fsave, n, particles);
+            }
         }
     }
     simulation_time = read_timer() - simulation_time;
 
-    printf("n = %d, simulation time = %g seconds \n", n, simulation_time);
+    printf("n = %d,threads = %d, simulation time = %g seconds", n, numthreads, simulation_time);
 //    printf("Init timer = %f \n", inittimer);
 //    printf("applyforce timer = %f \n", applyforcetimer);
 //    printf("move timer = %f \n", movetimer);

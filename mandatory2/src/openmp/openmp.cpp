@@ -40,7 +40,7 @@ int main( int argc, char **argv )
     //
     double simulation_time = read_timer( );
 
-    #pragma omp parallel private(dmin) 
+    #pragma omp parallel private(dmin)
     {
     numthreads = omp_get_num_threads();
     for( int step = 0; step < NSTEPS; step++ )

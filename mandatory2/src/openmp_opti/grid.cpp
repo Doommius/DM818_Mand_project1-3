@@ -44,26 +44,23 @@ void grid_add(particle_t *particle) {
  * Clears the whole grid.
  *
  */
-void grid_clear() {
+void grid_purge() {
     grid.clear();
     grid.resize(grid_size * grid_size);
 }
 
 void grid_remove(particle_t *particle) {
-    int p_coordinate = grid_particle_index(particle);
-//    printf("checking if cell is empty %s \n",grid[p_coordinate].empty() ? "true" : "false");
-    grid[p_coordinate].clear();
-//    printf("checking if cell is empty %s \n",grid[p_coordinate].empty() ? "true" : "false");
-
+    int coordinate = grid_particle_index(particle);
+    std::vector<particle_t *> &cell = grid[coordinate];
+    cell.erase(std::remove(cell.begin(), cell.end(), particle), cell.end());
 }
-
-std::vector<particle_t *> gridGetNeighbors(particle_t *particle, int indexx, int indexy) {
+std::vector<particle_t *> gridGetCollisionsAtNeighbor(particle_t *particle, int offsetX, int offsetY) {
     int p_cord = grid_particle_index(particle);
-    int x = (p_cord % grid_size) + indexx;
-    int y = (p_cord / grid_size) + indexy;
+    int x = (p_cord % grid_size) + offsetX;
+    int y = (p_cord / grid_size) + offsetY;
     if (x < 0 || y < 0 || x >= grid_size || y >= grid_size) {
         return std::vector<particle_t *>();
     }
-    return grid[p_cord + (indexy * grid_size) + indexx];
+    return grid[p_cord + (offsetY * grid_size) + offsetX];
 }
 

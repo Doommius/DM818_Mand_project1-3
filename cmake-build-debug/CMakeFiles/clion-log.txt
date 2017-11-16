@@ -1,6 +1,4 @@
 /home/jervelund/IDE/clion-2017.2.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/jervelund/ClionProjects/DM818
-CUDA_TOOLKIT_ROOT_DIR not found or specified
--- Could NOT find CUDA (missing:  CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS) 
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/jervelund/ClionProjects/DM818/cmake-build-debug

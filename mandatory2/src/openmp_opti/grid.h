@@ -12,13 +12,15 @@ int grid_get_size();
 
 void grid_init(int size);
 
-void grid_clear();
+void grid_purge();
+
+
 
 void grid_add(particle_t *particle);
 
 void grid_remove(particle_t *particle);
 
-std::vector<particle_t *> gridGetNeighbors(particle_t *particle, int indexx, int indexy);
+std::vector<particle_t *> gridGetCollisionsAtNeighbor(particle_t *particle, int offsetX, int offsetY);
 
 
 

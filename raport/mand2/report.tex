@@ -1,0 +1,165 @@
+%Template by Mark Jervelund - 2015 - mjerv15@student.sdu.dk
+
+\documentclass[a4paper,10pt,titlepage]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{pgfplots}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{wrapfig}
+\usepackage[document]{ragged2e}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage{datenumber}
+\usepackage{venndiagram}
+\usepackage{chngcntr}
+\setdatetoday
+\addtocounter{datenumber}{0} %date for dilierry standard is today
+\setdatebynumber{\thedatenumber}
+\date{}
+\setcounter{secnumdepth}{0}
+\pagestyle{fancy}
+\fancyhf{}
+
+
+%lstlisting ting:
+\definecolor{dkgreen}{rgb}{0,0.45,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.30,0,0.30}
+\lstset{frame=tb,
+  language=C++,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\footnotesize,
+  keywordstyle=\color{dkgreen}\bfseries,
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  frame=single,
+  breaklines=true,
+  breakatwhitespace=false
+  tabsize=1
+}
+\renewcommand{\lstlistingname}{Code}
+
+\newcommand{\Z}{\mathbb{Z}}
+\lhead{Parallel Computinge (DM818))}
+\rhead{Mark Jervelund (Mjerv15)}
+\rfoot{Page  \thepage \, of \pageref{LastPage}}
+\counterwithin*{equation}{section}
+
+\begin{document}
+\begin{titlepage}
+\centering
+    \vspace*{9\baselineskip}
+    \huge
+    \bfseries
+    1. Mandatory Assignment \\
+    \normalfont
+    Mark Jervelund  \\
+    (Mjerv15) \\
+	\huge
+    Parallel Computing (DM818)  \\[4\baselineskip]
+    \normalfont
+	\includegraphics[scale=1]{SDU_logo}
+    \vfill\
+    \vspace{5mm}
+    IMADA \\
+
+    \textbf{\datedate}  \bf{at 10} \\[2\baselineskip]
+\end{titlepage}
+
+\renewcommand{\thepage}{\roman{page}}% Roman numerals for page counter
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+\renewcommand{\thepage}{\arabic{page}}
+
+
+\section{Introduction}
+
+for the 2nd project in DM818 the task is to optimize and then parallelize a particle simulator.\\ For starting out we were given codes for a basic
+
+
+\subsection{Work load}
+
+
+\subsection{Issues}
+
+
+\section{Design}
+
+\subsection{Binning}
+\begin{wrapfigure}{r}{0.25\textwidth} %this figure will be at the right
+    \centering
+    \includegraphics[width=0.25\textwidth]{grid.png}
+\end{wrapfigure}
+The binning algorithm was designed to make use of a grid, so it could work the same way af the matric matrix blocking where it would interact with index +(-1,-1), to (1,1). \\
+
+With a design like this elements can be dynamiclly removed and added which should remove the computational waste of clearing the grid and reinitinaling it. it also allows the grid to be cleared on every cycle if it is needed. \\
+
+\subsection{Serial with grid}
+The serial grided implmentation is designed so it will only need itself and the 8 grids surounding it to calculate the forces needed to move the particle.
+
+\subsection{OPENMP with grid}
+When designing the openmp vertion of the code the template from the serial($n^2$) was used.
+
+\subsection{mpi with grid}
+
+
+
+
+\section{Implementation}
+\subsection{grid}
+The implemenation of grid.cpp has a few small functions. the most important one being the get Neighbors functions. This returns the surounding cells to the particle we wish to calculate the forces for. to The grid is stored as an array so to return the currect cell we use the same calculation as we need with the blocked matrix matrix program
+\begin{equation}
+index = currect location + row + column * rowlengt
+\end{equation}
+The other functions of the grid that are of some important is the clear and add function. i also implemented a remove element since it was mentionionged the other implementaion could slow execution down, but as i was unble to get it to work i used the clear function.
+
+\subsection{Serial grid}
+
+The optimized serial implementation was modified by modifying the compute forces loops to work in a blocked manner. this was simply done by adding 2 for loops that go from index x-1 y-1 to x+1 y+1 and a inner loop the loops over all particles in those grids.\\
+The move part of the code was modified by first clearing the grid as i was unable to get the computation to work currectly when just removing the element. and then calling the move function from common and adding the particle with its new values to the grid. 
+
+\subsection{OPENMP grid}
+For the openMP implementaion of the gridded algorithm the exsample from the serial $n^2$ program was used.
+
+
+\section{Testing \& issues}
+
+\subsection{Serial with grid}
+The implemented gridded version seems to run within the constriains of the included correction code.
+
+\subsection{OPENMP problems}
+The openmp implementation has a bug where it crashes after running n steps some times the completes, but there seem to be a race condition that causes a segmentation fault and thereby a crash.
+
+\section{Comparison}
+
+\includegraphics[scale=0.3]{oldvsnew}
+
+\section{Conclusion}
+\newpage
+\section{appendix}
+
+\section{Code}
+
+%\lstinputlisting{../src/dgemm.cpp}
+
+%\lstinputlisting{../src/test.cpp}
+
+\end{document}
+
