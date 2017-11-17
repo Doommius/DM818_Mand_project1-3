@@ -14,4 +14,4 @@ rm serial.txt
 ./serial -n 64000 -no -s serial.txt
 ./serial -n 128000 -no -s serial.txt
 ./serial -n 256000 -no -s serial.txt
-./autograder -v serial -s serial.txt
+./autograder -v serial   -s serial.txt

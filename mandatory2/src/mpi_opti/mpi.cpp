@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <cmath>
 #include "common.h"
 #include "grid.h"
 #include "mpi_code.h"
@@ -13,10 +14,16 @@
 int cellsperthread;
 int rank;
 int maxrank;
-int ParticleCount;
+int totalParticleCount;
+
+edgezone localupper;
+edgezone locallower;
+edgezone remoteupper;
+edgezone remotelower;
+
 
 int maxPosition;
-particle_t *ownedParticles;
+particle_t *localParticles;
 
 
 
@@ -53,6 +60,14 @@ int main( int argc, char **argv )
     MPI_Comm_size( MPI_COMM_WORLD, &maxrank );
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
 
+    MPI_Datatype PARTICLE;
+    MPI_Type_contiguous( 6, MPI_DOUBLE, &PARTICLE );
+    MPI_Type_commit( &PARTICLE );
+
+
+
+
+
     //
     //  allocate generic resources
     //
@@ -61,21 +76,76 @@ int main( int argc, char **argv )
 
 
     particle_t *particles = (particle_t*) malloc( n * sizeof(particle_t) );
+    localParticles = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
-    MPI_Datatype PARTICLE;
-    MPI_Type_contiguous( 6, MPI_DOUBLE, &PARTICLE );
-    MPI_Type_commit( &PARTICLE );
+    particle_t *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
+
+    int sendCount[maxrank];
+    int sendDisplacement[maxrank];
+
+
+    grid_init(n);
+    set_size(n);
+
+    cellsperthread = grid_get_size() * (int) ceil(grid_get_size()/(double) maxrank);
+
+    set_size( n );
+    if( rank == 0 ){
+        int sendStart = 0;
+        int currentProcessor = 0;
+        int counter = 0;
+
+        init_particles(totalParticleCount, particles);
+
+        for (int i = 0; i < totalParticleCount; ++i) {
+            grid_add(&particles[i]);
+        }
+        for (int i = 0; i < grid_get_size() * grid_get_size(); i++) {
+            auto cell = grid_get(i);
+            for (auto particle : cell) {
+                memcpy(particlesToSend + counter, particle, sizeof(particle_t));
+                counter++;
+            }
+            if ((i > 0 && i % cellsperthread == 0) || i == (grid_get_size() * grid_get_size()) - 1) {
+                sendCount[currentProcessor] = counter - sendStart;
+                sendDisplacement[currentProcessor] = sendStart;
+                sendStart = counter;
+                currentProcessor++;
+            }
+        }
+        grid_purge();
+
+    }
+
+    // Distribute the particle count to all processors
+    MPI_Scatter(sendCount, 1, MPI_INT, &maxPosition, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    // Distribute the actual particles
+    MPI_Scatterv(particlesToSend, sendCount, sendDisplacement, PARTICLE, localParticles, maxPosition,
+                 PARTICLE,
+                 0, MPI_COMM_WORLD);
+
+    remotelower.particles = (particle_t *) malloc(sizeof(particle_t) * totalParticleCount);
+    remoteupper.particles = (particle_t *) malloc(sizeof(particle_t) * totalParticleCount);
+    remotelower.coordinateStart = (cellsperthread * rank) - grid_get_size();
+    remoteupper.coordinateStart = (cellsperthread * (rank + 1));
+
+    locallower.particles = (particle_t *) malloc(sizeof(particle_t) * totalParticleCount);
+    localupper.particles = (particle_t *) malloc(sizeof(particle_t) * totalParticleCount);
+    locallower.coordinateStart = cellsperthread * rank;
+    localupper.coordinateStart = min((cellsperthread * (rank + 1)) - grid_get_size(), grid_get_size() * (grid_get_size() - 1));
+
+
 
     //
     //  set up the data partitioning across processors
     //
-    int particle_per_proc = (n + n_proc - 1) / n_proc;
-    int *partition_offsets = (int*) malloc( (n_proc+1) * sizeof(int) );
-    for( int i = 0; i < n_proc+1; i++ )
+    int particle_per_proc = (n + maxrank - 1) / maxrank;
+    int *partition_offsets = (int*) malloc( (maxrank+1) * sizeof(int) );
+    for( int i = 0; i < maxrank+1; i++ )
         partition_offsets[i] = min( i * particle_per_proc, n );
 
-    int *partition_sizes = (int*) malloc( n_proc * sizeof(int) );
-    for( int i = 0; i < n_proc; i++ )
+    int *partition_sizes = (int*) malloc( maxrank * sizeof(int) );
+    for( int i = 0; i < maxrank; i++ )
         partition_sizes[i] = partition_offsets[i+1] - partition_offsets[i];
 
     //
@@ -87,10 +157,6 @@ int main( int argc, char **argv )
     //
     //  initialize and distribute the particles (that's fine to leave it unoptimized)
     //
-    set_size( n );
-    if( rank == 0 )
-        init_particles( n, particles );
-    MPI_Scatterv( particles, partition_sizes, partition_offsets, PARTICLE, local, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
 
     //
     //  simulate a number of time steps
@@ -174,7 +240,7 @@ int main( int argc, char **argv )
       // Printing summary data
       //
       if( fsum)
-        fprintf(fsum,"%d %d %g\n",n,n_proc,simulation_time);
+        fprintf(fsum,"%d %d %g\n",n,maxrank,simulation_time);
     }
 
     //

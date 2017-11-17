@@ -115,10 +115,10 @@ With a design like this elements can be dynamiclly removed and added which shoul
 The serial grided implmentation is designed so it will only need itself and the 8 grids surounding it to calculate the forces needed to move the particle.
 
 \subsection{OPENMP with grid}
-When designing the openmp vertion of the code the template from the serial($n^2$) was used.
+For designing the openmp implementaiton the gridded implementation was used as a starting point and the loops with applyforce and move should be made parallel. the grid\_clear will have to have a barrier so threads won't start adding elements to the old grid that will be cleared by the main process. this will most likely cause some overhead.
 
 \subsection{mpi with grid}
-
+For the mpi implementation the gridded system will be split into larger groups that can be used to semiulate the groups on the indiviual threads, the only communication needed would be the edge cells between two groups but this would have to be done at every step. Futhermore some syncronisation overhead will occur at this point as all threads will have to sync data before the next step can begin.
 
 
 
@@ -136,7 +136,12 @@ The optimized serial implementation was modified by modifying the compute forces
 The move part of the code was modified by first clearing the grid as i was unable to get the computation to work currectly when just removing the element. and then calling the move function from common and adding the particle with its new values to the grid. 
 
 \subsection{OPENMP grid}
-For the openMP implementaion of the gridded algorithm the exsample from the serial $n^2$ program was used.
+The paraliesable area in the openmp implementation is all the code surounding the main step for loop. Whats made paralelle here is the apply force loop. this is done using \#pragma omp for, futhermore a \#pragma omp barrier is put in front of this here to make sure the master thread is done saving the data before other threads start using it. \\
+
+The move loop is is made so only a single thread is doing this. when it was using multiple threads there was some issues with segmentation faults and unstability. \\
+
+\subsection{mpi grid}
+The mpi im
 
 
 \section{Testing \& issues}
@@ -144,16 +149,20 @@ For the openMP implementaion of the gridded algorithm the exsample from the seri
 \subsection{Serial with grid}
 The implemented gridded version seems to run within the constriains of the included correction code.
 
-\subsection{OPENMP problems}
-The openmp implementation has a bug where it crashes after running n steps some times the completes, but there seem to be a race condition that causes a segmentation fault and thereby a crash.
-
 \section{Comparison}
 
+\subsection{Serial}
 \includegraphics[scale=0.3]{oldvsnew}
+
+\subsection{Openmp}
+
+\subsection{MPI}
 
 \section{Conclusion}
 \newpage
 \section{appendix}
+\subsection{data}
+\includegraphics[scale=0.7]{alldata}
 
 \section{Code}
 

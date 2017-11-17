@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
 #pragma omp parallel
     {
-        if (omp_get_thread_num() == 0){
+        if (omp_get_thread_num() == 0) {
             numthreads = omp_get_num_threads();
         };
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
             //
 //            starttimer = read_timer();
 //            printf("apply force \n");
-//#pragma omp barrier
+#pragma omp barrier
 #pragma omp for
             for (int i = 0; i < n; i++) {
                 particles[i].ax = particles[i].ay = 0;
@@ -108,12 +108,12 @@ int main(int argc, char **argv) {
 //            starttimer = read_timer();
 
 
-//#pragma omp single
-//            grid_purge();
-
-#pragma omp single
+            if (omp_get_thread_num() == 0) {
+                grid_purge();
+            }
+#pragma omp barrier
             for (int i = 0; i < n; i++) {
-                grid_remove(&particles[i]);
+//                grid_remove(&particles[i]);
 
                 move(particles[i]);
                 grid_add(&particles[i]);
