@@ -1,7 +1,7 @@
 #include <mpi.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
 #include <cmath>
 #include "common.h"
 #include "grid.h"
@@ -56,7 +56,7 @@ void exchangeEdge(edgezone &local, edgezone &remote, int multiplier) {
 
 particle_t *prepareInsertions(std::vector<particle_t> insertions) {
     int i = 0;
-    particle_t *result = (particle_t *) malloc(sizeof(particle_t) * insertions.size());
+    auto *result = (particle_t *) malloc(sizeof(particle_t) * insertions.size());
     for (auto particle : insertions) {
         memcpy(&result[i], &particle, sizeof(particle_t));
         i++;
@@ -67,7 +67,7 @@ particle_t *prepareInsertions(std::vector<particle_t> insertions) {
 
 particle_t *exchangeInsertions(std::vector<particle_t> &insertions, int multiplier, int *outputCount) {
     int count;
-    int sendingCount = (int) insertions.size();
+    auto sendingCount = (int) insertions.size();
 
     particle_t *prepared = prepareInsertions(insertions);
     particle_t *receiveBuffer;
@@ -100,11 +100,11 @@ void exchangeInformationBelow(particle_t **insertedUpper, int *insertedUpperCoun
     }
 }
 
-void doexchangeEdge(){
+void exchangeInformation(){
     int insertedIntoUpperOwnedCount = 0;
-    particle_t *insertedIntoUpperOwned = NULL;
+    particle_t *insertedIntoUpperOwned = nullptr;
     int insertedIntoLowerOwnedCount = 0;
-    particle_t *insertedIntoLowerOwned = NULL;
+    particle_t *insertedIntoLowerOwned = nullptr;
 
     prepareEdge(localupper);
     prepareEdge(locallower);
@@ -113,11 +113,9 @@ void doexchangeEdge(){
     grid_clear_area(remoteupper.coordinateStart,remoteupper.coordinateStart+grid_get_size());
 
     if (rank % 2 == 0) {
-        // Even ranks communicate with processors above us first
         exchangeInformationAbove(&insertedIntoLowerOwned, &insertedIntoLowerOwnedCount);
         exchangeInformationBelow(&insertedIntoUpperOwned, &insertedIntoUpperOwnedCount);
-    } else {
-        // Even ranks communicate with processors below us first
+    }else {
         exchangeInformationBelow(&insertedIntoUpperOwned, &insertedIntoUpperOwnedCount);
         exchangeInformationAbove(&insertedIntoLowerOwned, &insertedIntoLowerOwnedCount);
     }
@@ -145,8 +143,8 @@ int main(int argc, char **argv) {
     }
 
     int n = read_int(argc, argv, "-n", 1000);
-    char *savename = read_string(argc, argv, "-o", NULL);
-    char *sumname = read_string(argc, argv, "-s", NULL);
+    char *savename = read_string(argc, argv, "-o", nullptr);
+    char *sumname = read_string(argc, argv, "-s", nullptr);
 
     //
     //  set up MPI
@@ -166,14 +164,14 @@ int main(int argc, char **argv) {
     //
     //  allocate generic resources
     //
-    FILE *fsave = savename && rank == 0 ? fopen(savename, "w") : NULL;
-    FILE *fsum = sumname && rank == 0 ? fopen(sumname, "a") : NULL;
+    FILE *fsave = savename && rank == 0 ? fopen(savename, "w") : nullptr;
+    FILE *fsum = sumname && rank == 0 ? fopen(sumname, "a") : nullptr;
 
 
-    particle_t *particles = (particle_t *) malloc(n * sizeof(particle_t));
+    auto *particles = (particle_t *) malloc(n * sizeof(particle_t));
     localParticles = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
-    particle_t *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
+    auto *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
     int sendCount[maxrank];
     int sendDisplacement[maxrank];
@@ -213,7 +211,7 @@ int main(int argc, char **argv) {
     }
 
     // Distribute the particle count to all processors
-    MPI_Scatter(sendCount, 1, MPI_INT, &localParticles, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(sendCount, 1, MPI_INT, localParticles, 1, MPI_INT, 0, MPI_COMM_WORLD);
     // Distribute the actual particles
     MPI_Scatterv(particlesToSend, sendCount, sendDisplacement, PARTICLE, localParticles, totalParticleCount,
                  PARTICLE,
@@ -330,13 +328,6 @@ int main(int argc, char **argv) {
                 }
 #endif
 
-                // Take last element and move it in its place
-                maxPosition--;
-                if (i != maxPosition) {
-                    gridRemove(&ownedParticles[maxPosition]); // Make sure that the grid gets the updated pointer
-                    memcpy(&ownedParticles[i], &ownedParticles[maxPosition], sizeof(particle_t));
-                    gridAdd(&ownedParticles[i]);
-                }
             } else {
                 grid_add(&localParticles[i]);
             }
@@ -376,8 +367,6 @@ int main(int argc, char **argv) {
     //
     if (fsum)
         fclose(fsum);
-    free(partition_offsets);
-    free(partition_sizes);
     free(localParticles);
     free(particles);
     if (fsave)

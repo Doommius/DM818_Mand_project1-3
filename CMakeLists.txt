@@ -4,6 +4,7 @@ project(DM818)
 #export CC = /opt/intel/bin/icc
 set (CMAKE_CXX_STANDARD 11)
 #find_package(CUDA)
+
 find_package(MPI REQUIRED)
 
 include_directories(${MPI_INCLUDE_PATH})
@@ -39,11 +40,28 @@ add_executable(mand2_openmp ${SOURCE_FILES_mand2_openmp})
 set(SOURCE_FILES_mand2_openmp_opti mandatory2/src/openmp_opti/openmp_opti.cpp mandatory2/src/openmp_opti/common.cpp mandatory2/src/openmp_opti/common.h mandatory2/src/openmp_opti/grid.h mandatory2/src/openmp_opti/grid.cpp)
 add_executable(mand2_openmp_opti ${SOURCE_FILES_mand2_openmp_opti})
 
+
+
 set(SOURCE_FILES_mand2_mpi mandatory2/src/mpi/mpi.cpp mandatory2/src/mpi/common.cpp mandatory2/src/mpi/common.h)
 add_executable(mand2_mpi ${SOURCE_FILES_mand2_mpi})
 
 set(SOURCE_FILES_mand2_mpi_opti mandatory2/src/mpi_opti/mpi.cpp mandatory2/src/mpi_opti/common.cpp mandatory2/src/mpi_opti/common.h mandatory2/src/mpi_opti/grid.cpp mandatory2/src/mpi_opti/grid.h)
 add_executable(mand2_mpi_opti ${SOURCE_FILES_mand2_mpi_opti})
+
+target_link_libraries(mand2_mpi ${MPI_LIBRARIES})
+
+target_link_libraries(mand2_mpi_opti ${MPI_LIBRARIES})
+
+
+if(MPI_COMPILE_FLAGS)
+    set_target_properties(hello PROPERTIES
+            COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
+endif()
+
+if(MPI_LINK_FLAGS)
+    set_target_properties(hello PROPERTIES
+            LINK_FLAGS "${MPI_LINK_FLAGS}")
+endif()
 
 
 #flag for openmp -fopenmp
