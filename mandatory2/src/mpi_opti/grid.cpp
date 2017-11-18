@@ -32,6 +32,14 @@ int grid_particle_index(particle_t *particle) {
     return (int) (particle->x / 0.01) * grid_size + (int) (particle->y / 0.01);
 }
 
+void grid_clear_area(int start, int end){
+    if (start >= 0 && end < grid.size()) {
+        for (int i = start; i < end; i++) {
+            grid[i].clear();
+        }
+    }
+}
+
 /**
  * we see the grid as a matrix and insert it, in this way we can easily split the array up into blocks.
  * @param particle

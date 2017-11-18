@@ -26,14 +26,12 @@ add_executable(mand_1_test-dgemm ${SOURCE_FILES_testdgemm})
 
 
 set(SOURCE_FILES_mand2_serial mandatory2/src/serial/serial.cpp mandatory2/src/serial/common.cpp  mandatory2/src/serial/grid.cpp mandatory2/src/serial/common.h  )
-add_executable(mand_2_Particle_serial ${SOURCE_FILES_mand2_serial})
+add_executable(mand_2_serial ${SOURCE_FILES_mand2_serial})
 
 
 set(SOURCE_FILES_mand2_serial_opti mandatory2/src/serial_opti/serial.cpp mandatory2/src/serial_opti/common.cpp mandatory2/src/serial_opti/common.h  mandatory2/src/serial_opti/grid.cpp mandatory2/src/serial_opti/grid.h)
-add_executable(mand_2_Particle_serial_opti ${SOURCE_FILES_mand2_serial_opti})
+add_executable(mand_2_serial_opti ${SOURCE_FILES_mand2_serial_opti})
 
-set(SOURCE_FILES_mand2_mpi mandatory2/src/mpi/mpi.cpp mandatory2/src/mpi/common.cpp mandatory2/src/mpi/common.h)
-add_executable(mand_2_Particle_mpi ${SOURCE_FILES_mand2_mpi})
 
 set(SOURCE_FILES_mand2_openmp mandatory2/src/openmp/openmp.cpp mandatory2/src/openmp/common.cpp mandatory2/src/openmp/common.h)
 add_executable(mand2_openmp ${SOURCE_FILES_mand2_openmp})
@@ -43,5 +41,9 @@ add_executable(mand2_openmp_opti ${SOURCE_FILES_mand2_openmp_opti})
 
 set(SOURCE_FILES_mand2_mpi mandatory2/src/mpi/mpi.cpp mandatory2/src/mpi/common.cpp mandatory2/src/mpi/common.h)
 add_executable(mand2_mpi ${SOURCE_FILES_mand2_mpi})
+
+set(SOURCE_FILES_mand2_mpi_opti mandatory2/src/mpi_opti/mpi.cpp mandatory2/src/mpi_opti/common.cpp mandatory2/src/mpi_opti/common.h mandatory2/src/mpi_opti/grid.cpp mandatory2/src/mpi_opti/grid.h)
+add_executable(mand2_mpi_opti ${SOURCE_FILES_mand2_mpi_opti})
+
 
 #flag for openmp -fopenmp

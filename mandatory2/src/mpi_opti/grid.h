@@ -16,6 +16,10 @@ void grid_purge();
 
 std::vector<particle_t *> grid_get(int n);
 
+int grid_particle_index(particle_t *particle);
+
+void grid_clear_area(int start, int end);
+
 void grid_add(particle_t *particle);
 
 void grid_remove(particle_t *particle);

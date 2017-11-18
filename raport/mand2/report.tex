@@ -117,10 +117,14 @@ The serial grided implmentation is designed so it will only need itself and the 
 \subsection{OPENMP with grid}
 For designing the openmp implementaiton the gridded implementation was used as a starting point and the loops with applyforce and move should be made parallel. the grid\_clear will have to have a barrier so threads won't start adding elements to the old grid that will be cleared by the main process. this will most likely cause some overhead.
 
-\subsection{mpi with grid}
-For the mpi implementation the gridded system will be split into larger groups that can be used to semiulate the groups on the indiviual threads, the only communication needed would be the edge cells between two groups but this would have to be done at every step. Futhermore some syncronisation overhead will occur at this point as all threads will have to sync data before the next step can begin.
+\subsection{MPI with grid}
 
+The reasosning behind a mpi implmentation is to split the grid into smaller chunks, this can be done in a few different ways, the most aparent is splitting the chucks into smaller squres, but this requires the larger grid to be divisable by p, a different aproch is to split the grid into rows. \\
+For the sub cubed inplementation we'll have to talk to the 8 surounding threads which could induce a huge commnunication overhead, while the row wise implementaiton only required the threads to talk to 2 threads, and 1 for the top and lowest thread. \\
 
+The commnucation per step would for each process be 2 x gridwidth x size of particle\_t. this is reasonable but at everystep we'd need to sync so all threads have the required data. \\
+
+\newpage
 
 \section{Implementation}
 \subsection{grid}
@@ -148,6 +152,10 @@ The mpi im
 
 \subsection{Serial with grid}
 The implemented gridded version seems to run within the constriains of the included correction code.
+
+\subsection{openmp with grid}
+The openmp verstion was working the other day, i changed something and now it's broken
+
 
 \section{Comparison}
 
