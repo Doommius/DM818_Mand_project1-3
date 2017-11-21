@@ -1,14 +1,11 @@
 //
-// Created by jervelund on 11/16/17.
+// Created by jervelund on 11/18/17.
 //
-
 #include "common.h"
+#ifndef DM818_MPI_H
+#define DM818_MPI_H
 
-#ifndef DM818_MPI_CODE_H
-#define DM818_MPI_CODE_H
-
-
-#endif //DM818_MPI_CODE_H
+#endif //DM818_MPI_H
 
 typedef struct {
     int particleCount;

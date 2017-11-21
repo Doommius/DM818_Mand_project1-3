@@ -97,34 +97,6 @@ void exchangeInformationBelow(particle_t **insertedUpper, int *insertedUpperCoun
     }
 }
 
-void updatelocalgrid(edgezone &zone, std::vector<particle_t> &localInsertions) {
-
-    for (int i = 0; i < zone.particleCount; i++) {
-        grid_add(&zone.particles[i]);
-    }
-
-    for (auto particle : localInsertions) {
-        mempcpy(&zone.particles[zone.particleCount], &particle, sizeof(particle_t));
-        grid_add(&zone.particles[zone.particleCount]);
-        zone.particleCount++;
-    }
-
-}
-
-void mergeInsertedInLocallyOwned(int insertedCount, particle_t *inserted) {
-    int start = localparticlescount;
-
-    // The incoming buffer is a temporary one. Move the particles to the owned buffer
-    memcpy(&localParticles[localparticlescount], inserted, sizeof(particle_t) * insertedCount);
-    localparticlescount += insertedCount;
-
-    for (int i = start; i < start + insertedCount; i++) {
-        grid_add(&localParticles[i]);
-    }
-}
-
-
-
 void exchangeInformation(){
     int insertedIntoUpperOwnedCount = 0;
     particle_t *insertedIntoUpperOwned = nullptr;
@@ -145,17 +117,7 @@ void exchangeInformation(){
         exchangeInformationAbove(&insertedIntoLowerOwned, &insertedIntoLowerOwnedCount);
     }
 
-    updatelocalgrid(remoteupper,insertionsIntoUpperBorrowed);
-    updatelocalgrid(remotelower,insertionsIntoLowerBorrowed);
 
-    mergeInsertedInLocallyOwned(insertedIntoLowerOwnedCount, insertedIntoLowerOwned);
-    mergeInsertedInLocallyOwned(insertedIntoUpperOwnedCount, insertedIntoUpperOwned);
-
-    insertionsIntoLowerBorrowed.clear();
-    insertionsIntoUpperBorrowed.clear();
-
-    if (insertedIntoLowerOwned == NULL) free(insertedIntoLowerOwned);
-    if (insertedIntoUpperOwned == NULL) free(insertedIntoUpperOwned);
 }
 
 int main(int argc, char **argv) {
@@ -178,7 +140,6 @@ int main(int argc, char **argv) {
     }
 
     int n = read_int(argc, argv, "-n", 1000);
-    totalParticleCount = n;
     char *savename = read_string(argc, argv, "-o", nullptr);
     char *sumname = read_string(argc, argv, "-s", nullptr);
 
@@ -221,7 +182,7 @@ int main(int argc, char **argv) {
 
     if (rank == 0) {
         int sendStart = 0;
-        int currentrank = 0;
+        int currentProcessor = 0;
         int counter = 0;
 
         init_particles(totalParticleCount, particles);
@@ -236,10 +197,10 @@ int main(int argc, char **argv) {
                 counter++;
             }
             if ((i > 0 && i % cellsperthread == 0) || i == (grid_get_size() * grid_get_size()) - 1) {
-                sendCount[currentrank] = counter - sendStart;
-                sendDisplacement[currentrank] = sendStart;
+                sendCount[currentProcessor] = counter - sendStart;
+                sendDisplacement[currentProcessor] = sendStart;
                 sendStart = counter;
-                currentrank++;
+                currentProcessor++;
             }
         }
         grid_purge();
@@ -294,7 +255,6 @@ int main(int argc, char **argv) {
         //  compute all forces
         //
         for (int i = 0; i < localparticlescount; i++) {
-            localParticles[i].ax = localParticles[i].ay = 0;
             // traverse included neighbors
             for (int offsetX = -1; offsetX <= 1; offsetX++) {
                 for (int offsetY = -1; offsetY <= 1; offsetY++) {
@@ -388,6 +348,7 @@ int main(int argc, char **argv) {
     if (fsum)
         fclose(fsum);
     free(localParticles);
+    free(particles);
     if (fsave)
         fclose(fsave);
 
