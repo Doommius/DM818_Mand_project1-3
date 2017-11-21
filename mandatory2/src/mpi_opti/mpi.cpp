@@ -36,7 +36,7 @@ void prepareEdge(edgezone &edge) {
     edge.particleCount = 0;
     for (int i = edge.coordinateStart; i < edge.coordinateStart + grid_get_size(); i++) {
         for (particle_t particle : grid_get(i)) {
-            std::copy(&edge.particles[edge.particleCount], particle, sizeof(particle_t));
+            memcpy(&edge.particles[edge.particleCount], particle, sizeof(particle_t));
             edge.particleCount++;
         }
     }
@@ -66,7 +66,7 @@ particle_t *exchangeInfomation(std::vector<particle_t> &particlesToExchange, int
     int i = 0;
     particle_t *prepared = (particle_t *) malloc(sizeof(particle_t) * particlesToExchange.size());
     for (particle_t particle : particlesToExchange) {
-        std::copy(&prepared[i], &particle, sizeof(particle_t));
+        memcpy(&prepared[i], &particle, sizeof(particle_t));
         i++;
     }
 
@@ -104,7 +104,7 @@ void updatelocalgrid(edgezone &zone, std::vector<particle_t> &localInsertions) {
     }
 
     for (particle_t particle : localInsertions) {
-        std::copy(&zone.particles[zone.particleCount], &particle, sizeof(particle_t));
+        mempcpy(&zone.particles[zone.particleCount], &particle, sizeof(particle_t));
         grid_add(&zone.particles[zone.particleCount]);
         zone.particleCount++;
     }
@@ -115,7 +115,7 @@ void mergeInsertedInLocallyOwned(int insertedCount, particle_t *inserted) {
     int start = localparticlescount;
 
     // The incoming buffer is a temporary one. Move the particles to the owned buffer
-    std::copy(&localParticles[localparticlescount], inserted, sizeof(particle_t) * insertedCount);
+    memcpy(&localParticles[localparticlescount], inserted, sizeof(particle_t) * insertedCount);
     localparticlescount += insertedCount;
 
     for (int i = start; i < start + insertedCount; i++) {
@@ -232,7 +232,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < grid_get_size() * grid_get_size(); i++) {
             std::vector<particle_t *> cell = grid_get(i);
             for (particle_t * particle : cell) {
-                std::copy(particlesToSend + counter, particle, sizeof(particle_t));
+                memcpy(particlesToSend + counter, particle, sizeof(particle_t));
                 counter++;
             }
             if ((i > 0 && i % cellsperthread == 0) || i == (grid_get_size() * grid_get_size()) - 1) {
@@ -338,7 +338,7 @@ int main(int argc, char **argv) {
                     cord >= remoteupper.coordinateStart) { // Out of bounds
                 // Copy the particle and insert into a vector of insertions into a certain ghost zone
                 particle_t copy;
-                std::copy(&copy, &localParticles[i], sizeof(particle_t));
+                memcpy(&copy, &localParticles[i], sizeof(particle_t));
 
                 if (cord >= remotelower.coordinateStart &&
                         cord < remotelower.coordinateStart + grid_get_size()) {
