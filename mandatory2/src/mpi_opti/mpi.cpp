@@ -35,7 +35,7 @@ void prepareEdge(edgezone &edge) {
     // Move the particles from the real grid into the buffer
     edge.particleCount = 0;
     for (int i = edge.coordinateStart; i < edge.coordinateStart + grid_get_size(); i++) {
-        for (auto particle : grid_get(i)) {
+        for (particle_t particle : grid_get(i)) {
             memcpy(&edge.particles[edge.particleCount], particle, sizeof(particle_t));
             edge.particleCount++;
         }
@@ -57,15 +57,15 @@ void exchangeEdge(edgezone &local, edgezone &remote, int multiplier) {
 
 particle_t *exchangeInfomation(std::vector<particle_t> &particlesToExchange, int multiplier, int *recievedCount) {
     int count;
-    auto sendingCount = (int) particlesToExchange.size();
+    int sendingCount = (int) particlesToExchange.size();
 
 
     MPI_Sendrecv(&sendingCount, 1, MPI_INT, rank + (1 * multiplier), 0, &count, 1, MPI_INT, rank + (1 * multiplier), 0,
                  MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     int i = 0;
-    auto *prepared = (particle_t *) malloc(sizeof(particle_t) * particlesToExchange.size());
-    for (auto particle : particlesToExchange) {
+    particle_t *prepared = (particle_t *) malloc(sizeof(particle_t) * particlesToExchange.size());
+    for (particle_t particle : particlesToExchange) {
         memcpy(&prepared[i], &particle, sizeof(particle_t));
         i++;
     }
@@ -103,7 +103,7 @@ void updatelocalgrid(edgezone &zone, std::vector<particle_t> &localInsertions) {
         grid_add(&zone.particles[i]);
     }
 
-    for (auto particle : localInsertions) {
+    for (particle_t particle : localInsertions) {
         mempcpy(&zone.particles[zone.particleCount], &particle, sizeof(particle_t));
         grid_add(&zone.particles[zone.particleCount]);
         zone.particleCount++;
@@ -204,10 +204,10 @@ int main(int argc, char **argv) {
     FILE *fsum = sumname && rank == 0 ? fopen(sumname, "a") : nullptr;
 
 
-    auto *particles = (particle_t *) malloc(n * sizeof(particle_t));
+    particle_t *particles = (particle_t *) malloc(n * sizeof(particle_t));
     localParticles = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
-    auto *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
+    particle_t *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
     int sendCount[maxrank];
     int sendDisplacement[maxrank];
@@ -230,8 +230,8 @@ int main(int argc, char **argv) {
             grid_add(&particles[i]);
         }
         for (int i = 0; i < grid_get_size() * grid_get_size(); i++) {
-            auto cell = grid_get(i);
-            for (auto particle : cell) {
+            std::vector<particle_t *> cell = grid_get(i);
+            for (particle_t * particle : cell) {
                 memcpy(particlesToSend + counter, particle, sizeof(particle_t));
                 counter++;
             }
@@ -300,7 +300,7 @@ int main(int argc, char **argv) {
                 for (int offsetY = -1; offsetY <= 1; offsetY++) {
                     const std::vector<particle_t *> &cell =
                             gridGetCollisionsAtNeighbor(&localParticles[i], offsetX, offsetY);
-                    for (auto particle : cell) {
+                    for (particle_t* particle : cell) {
                         apply_force(localParticles[i], *particle, &dmin, &davg, &navg);
                     }
                 }
