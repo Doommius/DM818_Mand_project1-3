@@ -35,7 +35,7 @@ void prepareEdge(edgezone &edge) {
     // Move the particles from the real grid into the buffer
     edge.particleCount = 0;
     for (int i = edge.coordinateStart; i < edge.coordinateStart + grid_get_size(); i++) {
-        for (particle_t particle : grid_get(i)) {
+        for (particle_t* particle : grid_get(i)) {
             memcpy(&edge.particles[edge.particleCount], particle, sizeof(particle_t));
             edge.particleCount++;
         }
