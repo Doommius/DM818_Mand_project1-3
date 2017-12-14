@@ -91,7 +91,7 @@
 
 \section{Introduction}
 
-In the second project for DM818 we were tasked with making a particle simulator parallel, as a starting point we were given implementations in seriel, OpenMP, Pthreads, and MPI, The tasks were as follows, \\
+In the second project for DM818 we were tasked with making a particle simulator parallel, as a starting point we were given implementations in serial, OpenMP, Pthreads, and MPI, The tasks were as follows, \\
 
 \begin{itemize}
 \item Optimize the serial ($ \theta = n^2$) to run in ($ \theta = n$) time
@@ -101,12 +101,13 @@ In the second project for DM818 we were tasked with making a particle simulator 
 
 These different implementations should then be tested on the Edison Cluster at Nersc, Who has made computational time for the project. \\
 
+The project will be developed using Clion and Cmake as the build tool. the project folder will therefor be included in the handin. \\
+
 \subsection{Work load and work distribution}
 The project was done alone. 
 
 \subsection{Issues}
-
-The MPI code isn't functional, Therefor performance testing was also done using the code supplied from the lecturer. This code runs in $n^2$ time.
+The mpi Implementation doesn't support saving the data or correction checking at the moment.
 
 \newpage
 
@@ -147,14 +148,14 @@ The other functions of the grid that are of some important is the clear and add 
 \subsection{Serial grid}
 
 The optimized serial implementation was modified by modifying the compute forces loops to work in a blocked manner. this was simply done by adding 2 for loops that go from index x-1 y-1 to x+1 y+1 and a inner loop the loops over all particles in those grids.\\
-The move part of the code was modified by first clearing the grid as i was unable to get the computation to work currectly when just removing the element. and then calling the move function from common and adding the particle with its new values to the grid. 
+The move part of the code was modified by first clearing the grid as i was unable to get the computation to work currently when just removing the element. and then calling the move function from common and adding the particle with its new values to the grid. 
 
 \subsection{OPENMP grid}
 The parallel area in the openmp implementation is all the code surrounding the main step for loop. Whats made parallel here is the apply force loop. this is done using \#pragma omp for, furthermore a \#pragma omp barrier is put in front of this here to make sure the master thread is done saving the data before other threads start using it. \\
 
 The move loop is is made so only a single thread is doing this. when it was using multiple threads there was some issues with segmentation faults and instability. \\
 
-\subsection{mpi grid}
+\subsection{MPI grid}
 The MPI with grid implementation was designed in so the grid would be split up into groups of rows, therefor each process would only have to communicate with 2 others in average case. This implementation meant that that at each step all processes would need to catch to to each other, this means that the implementation would have some overhead in the transfer stage, but it would be minimal as the average case all the cells have around the same amount of particles due to limits set in the base program. \\
 
 
@@ -164,7 +165,7 @@ The MPI with grid implementation was designed in so the grid would be split up i
 The different version's of the code have quite reasonable run times, and the accuracy of the code is good. however scaling on the parallel implementations isn't as good as it maybe should be.  \\
 
 \subsection{MPI}
-I wasn't able to get the MPI code to run in time for the deadline. I have included the code in the hand-in, but it doesn't run.
+The mpi code only runs on the imada terminal room machines and on my own laptop. and was therefor only tested there.
 
 \section{Comparison}
 
@@ -179,7 +180,17 @@ From looking on the graph it can be seen that the optimized version runs a lot f
 
 
 \subsection{Openmp}
-The OpenMP implementation provides a scaling efficiency of 0.48, which means there is a lot of overhead in this implementation. this is mostly due to some of the code being run in a single thread, and some barrier points where the different threads sync.
+The OpenMP implementation provides a speedup of 3.1 and a scaling efficiency of 0.40 at 256k elements, which means there is a lot of overhead in this implementation. this is mostly due to some of the code being run in a single thread, and some barrier points where the different threads sync.
+
+\subsection{MPI}
+The MPI implementation provides the best performance, this is most likely due to the blocked implementation that means each thread only has to exchange information once per step. \\
+The code has some issues with working on very small dataset but works great on large datasets.\\
+The MPI implementation provides a speedup of 5.7 at 256k elements and a efficiency of 0.71
+
+
+\subsection{seriel vs OpenMP vs MPI}
+\includegraphics[scale=0.5]{laptop_results}
+\includegraphics[scale=0.5]{laptop_results_xlog}
 
 \section{Discussion}
 The 3 different of the implementation differ from each other, OpenMP has it's good sides but it's limited to only 1 node, while MPI offers scaling across a huge cluster with many nodes. but it's also a lot more in dept to program, \\
@@ -193,13 +204,10 @@ Even though the entire project wasn't finished related to MPI, a lot was still l
 \newpage
 \section{appendix}
 \subsection{data}
-The whole excel sheet with data used for the graphs can be found here.
-\begin{lstlisting}
-https://1drv.ms/x/s!AjA16Is6byyvjvV-C5Vz5mWHLZhjig
-\end{lstlisting}
-\includegraphics[scale=0.7]{alldata}
+The excel sheet with data used for the graphs can be found in the report folder.\\
 
-%\section{Code}
+\section{Code}
+The whole code project can be found in the cmakeproject folder.
 %\lstinputlisting{mandatory2/src/dgemm.cpp}
 
 %\lstinputlisting{../src/test.cpp}

@@ -1,4 +1,5 @@
 /home/jervelund/IDE/clion-2017.2.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/jervelund/ClionProjects/DM818
+-- A library with BLAS API found.
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/jervelund/ClionProjects/DM818/cmake-build-debug

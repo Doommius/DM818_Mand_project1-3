@@ -6,6 +6,7 @@ set (CMAKE_CXX_STANDARD 11)
 #find_package(CUDA)
 
 find_package(MPI REQUIRED)
+find_package(BLAS REQUIRED)
 
 include_directories(${MPI_INCLUDE_PATH})
 
@@ -51,6 +52,13 @@ add_executable(mand2_mpi_opti ${SOURCE_FILES_mand2_mpi_opti})
 target_link_libraries(mand2_mpi ${MPI_LIBRARIES})
 
 target_link_libraries(mand2_mpi_opti ${MPI_LIBRARIES})
+
+
+set(SOURCE_FILES_mand3 mandatory3/src/main.c mandatory3/src/matrix.c mandatory3/src/matrix.h)
+add_executable(mand3 ${SOURCE_FILES_mand3})
+
+target_link_libraries(mand3 ${MPI_LIBRARIES} ${BLAS_LIBRARIES} m )
+
 
 
 #flag for openmp -fopenmp

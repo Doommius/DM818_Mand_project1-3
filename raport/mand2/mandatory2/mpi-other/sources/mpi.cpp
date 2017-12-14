@@ -35,7 +35,7 @@ void prepareEdge(edgezone &edge) {
     // Move the particles from the real grid into the buffer
     edge.particleCount = 0;
     for (int i = edge.coordinateStart; i < edge.coordinateStart + grid_get_size(); i++) {
-        for (auto particle : grid_get(i)) {
+        for (particle_t* particle : grid_get(i)) {
             memcpy(&edge.particles[edge.particleCount], particle, sizeof(particle_t));
             edge.particleCount++;
         }
@@ -57,15 +57,15 @@ void exchangeEdge(edgezone &local, edgezone &remote, int multiplier) {
 
 particle_t *exchangeInfomation(std::vector<particle_t> &particlesToExchange, int multiplier, int *recievedCount) {
     int count;
-    auto sendingCount = (int) particlesToExchange.size();
+    int sendingCount = (int) particlesToExchange.size();
 
 
     MPI_Sendrecv(&sendingCount, 1, MPI_INT, rank + (1 * multiplier), 0, &count, 1, MPI_INT, rank + (1 * multiplier), 0,
                  MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     int i = 0;
-    auto *prepared = (particle_t *) malloc(sizeof(particle_t) * particlesToExchange.size());
-    for (auto particle : particlesToExchange) {
+    particle_t *prepared = (particle_t *) malloc(sizeof(particle_t) * particlesToExchange.size());
+    for (particle_t particle : particlesToExchange) {
         memcpy(&prepared[i], &particle, sizeof(particle_t));
         i++;
     }
@@ -97,6 +97,34 @@ void exchangeInformationBelow(particle_t **insertedUpper, int *insertedUpperCoun
     }
 }
 
+void updatelocalgrid(edgezone &zone, std::vector<particle_t> &localInsertions) {
+
+    for (int i = 0; i < zone.particleCount; i++) {
+        grid_add(&zone.particles[i]);
+    }
+
+    for (particle_t particle : localInsertions) {
+        mempcpy(&zone.particles[zone.particleCount], &particle, sizeof(particle_t));
+        grid_add(&zone.particles[zone.particleCount]);
+        zone.particleCount++;
+    }
+
+}
+
+void mergeInsertedInLocallyOwned(int insertedCount, particle_t *inserted) {
+    int start = localparticlescount;
+
+    // The incoming buffer is a temporary one. Move the particles to the owned buffer
+    memcpy(&localParticles[localparticlescount], inserted, sizeof(particle_t) * insertedCount);
+    localparticlescount += insertedCount;
+
+    for (int i = start; i < start + insertedCount; i++) {
+        grid_add(&localParticles[i]);
+    }
+}
+
+
+
 void exchangeInformation(){
     int insertedIntoUpperOwnedCount = 0;
     particle_t *insertedIntoUpperOwned = nullptr;
@@ -117,7 +145,17 @@ void exchangeInformation(){
         exchangeInformationAbove(&insertedIntoLowerOwned, &insertedIntoLowerOwnedCount);
     }
 
+    updatelocalgrid(remoteupper,insertionsIntoUpperBorrowed);
+    updatelocalgrid(remotelower,insertionsIntoLowerBorrowed);
 
+    mergeInsertedInLocallyOwned(insertedIntoLowerOwnedCount, insertedIntoLowerOwned);
+    mergeInsertedInLocallyOwned(insertedIntoUpperOwnedCount, insertedIntoUpperOwned);
+
+    insertionsIntoLowerBorrowed.clear();
+    insertionsIntoUpperBorrowed.clear();
+
+    if (insertedIntoLowerOwned == NULL) free(insertedIntoLowerOwned);
+    if (insertedIntoUpperOwned == NULL) free(insertedIntoUpperOwned);
 }
 
 int main(int argc, char **argv) {
@@ -140,6 +178,7 @@ int main(int argc, char **argv) {
     }
 
     int n = read_int(argc, argv, "-n", 1000);
+    totalParticleCount = n;
     char *savename = read_string(argc, argv, "-o", nullptr);
     char *sumname = read_string(argc, argv, "-s", nullptr);
 
@@ -165,10 +204,10 @@ int main(int argc, char **argv) {
     FILE *fsum = sumname && rank == 0 ? fopen(sumname, "a") : nullptr;
 
 
-    auto *particles = (particle_t *) malloc(n * sizeof(particle_t));
+    particle_t *particles = (particle_t *) malloc(n * sizeof(particle_t));
     localParticles = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
-    auto *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
+    particle_t *particlesToSend = (particle_t *) malloc(totalParticleCount * sizeof(particle_t));
 
     int sendCount[maxrank];
     int sendDisplacement[maxrank];
@@ -182,7 +221,7 @@ int main(int argc, char **argv) {
 
     if (rank == 0) {
         int sendStart = 0;
-        int currentProcessor = 0;
+        int currentrank = 0;
         int counter = 0;
 
         init_particles(totalParticleCount, particles);
@@ -191,16 +230,16 @@ int main(int argc, char **argv) {
             grid_add(&particles[i]);
         }
         for (int i = 0; i < grid_get_size() * grid_get_size(); i++) {
-            auto cell = grid_get(i);
-            for (auto particle : cell) {
+            std::vector<particle_t *> cell = grid_get(i);
+            for (particle_t * particle : cell) {
                 memcpy(particlesToSend + counter, particle, sizeof(particle_t));
                 counter++;
             }
             if ((i > 0 && i % cellsperthread == 0) || i == (grid_get_size() * grid_get_size()) - 1) {
-                sendCount[currentProcessor] = counter - sendStart;
-                sendDisplacement[currentProcessor] = sendStart;
+                sendCount[currentrank] = counter - sendStart;
+                sendDisplacement[currentrank] = sendStart;
                 sendStart = counter;
-                currentProcessor++;
+                currentrank++;
             }
         }
         grid_purge();
@@ -255,12 +294,13 @@ int main(int argc, char **argv) {
         //  compute all forces
         //
         for (int i = 0; i < localparticlescount; i++) {
+            localParticles[i].ax = localParticles[i].ay = 0;
             // traverse included neighbors
             for (int offsetX = -1; offsetX <= 1; offsetX++) {
                 for (int offsetY = -1; offsetY <= 1; offsetY++) {
                     const std::vector<particle_t *> &cell =
                             gridGetCollisionsAtNeighbor(&localParticles[i], offsetX, offsetY);
-                    for (auto particle : cell) {
+                    for (particle_t* particle : cell) {
                         apply_force(localParticles[i], *particle, &dmin, &davg, &navg);
                     }
                 }
@@ -348,7 +388,6 @@ int main(int argc, char **argv) {
     if (fsum)
         fclose(fsum);
     free(localParticles);
-    free(particles);
     if (fsave)
         fclose(fsave);
 
