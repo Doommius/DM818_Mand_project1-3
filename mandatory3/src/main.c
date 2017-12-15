@@ -227,8 +227,8 @@ int main(int argc, char **argv) {
 //       Multiply
         double *blockmatrixC = (double *) malloc(sizeof(double) * blockLength * blockLength);
         memset(blockmatrixC, 0, sizeof(double) * blockLength * blockLength);
-//        naive_dgemm(blockLength, receivedMatrixA, receivedMatrixB, blockmatrixC);
-        squareDgemm(blockLength, receivedMatrixA, receivedMatrixB, blockmatrixC);
+        naive_dgemm(blockLength, receivedMatrixA, receivedMatrixB, blockmatrixC);
+//        squareDgemm(blockLength, receivedMatrixA, receivedMatrixB, blockmatrixC);
 
 //        Reduce.
         MPI_Reduce(blockmatrixC, ReducedMatrixC, blockLength * blockLength, MPI_DOUBLE, matrixSum, 0, kComm);
