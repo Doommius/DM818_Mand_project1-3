@@ -1,6 +1,10 @@
 
 #include <stdlib.h>
 #include "matrix.h"
+#include <cblas.h> //assumes general CBLAS interface
+
+
+//const char* dgemm_desc = "BLAS dgemm.";
 
 #define DGEMM dgemm_
 
@@ -45,32 +49,39 @@ void destroy_matrices(double *matrixA, double *matrixB, double *matrixC) {
 
 /* Matrix multiplication */
 void matrix_mult(int N, double *A, double *B, double *C) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            double cij = C[i + j * N];
-            for (int k = 0; k < N; k++) {
-                cij += A[i + k * N] * B[k + j * N];
-            }
-            C[i + j * N] = cij;
-        }
+
+
+
+    {
+        char TRANSA = 'N';
+        char TRANSB = 'N';
+        int M = N;
+        int K = N;
+        double ALPHA = 1.;
+        double BETA = 1.;
+        int LDA = N;
+        int LDB = N;
+        int LDC = N;
+        DGEMM(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, A, &LDA, B, &LDB, &BETA, C, &LDC);
     }
 
-    return;
+
+}
 
 
-//            {
-//                    char TRANSA = 'N';
-//                    char TRANSB = 'N';
-//                    int M = N;
-//                    int K = N;
-//                    double ALPHA = 1.;
-//                    double BETA = 1.;
-//                    int LDA = N;
-//                    int LDB = N;
-//                    int LDC = N;
-//                    DGEMM(&TRANSA, &TRANSB, &M, &N, &K, &ALPHA, A, &LDA, B, &LDB, &BETA, C, &LDC);
+void naive_dgemm( int n, double *A, double *B, double *C )
+{
+//    for (int i = 0; i < N; i++) {
+//        for (int j = 0; j < N; j++) {
+//            double cij = C[i + j * N];
+//            for (int k = 0; k < N; k++) {
+//                cij += A[i + k * N] * B[k + j * N];
 //            }
-
+//            C[i + j * N] = cij;
+//        }
+//    }
+//
+//    return;
 }
 
 void sumMatrices(void *in, void *inout, int *length, MPI_Datatype *type) {

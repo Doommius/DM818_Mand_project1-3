@@ -8,7 +8,7 @@ CFLAGS = -O3
 LIBS = 
 
 dnsmat: main.o matrix.o comm.o
-	$(CC) $(CFLAGS) -o dnsmat main.o matrix.o comm.o $(LIBS)
+	$(CC) $(CFLAGS) -o dnsmat main.o matrix.o $(LIBS)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $<

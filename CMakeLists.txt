@@ -7,6 +7,7 @@ set (CMAKE_CXX_STANDARD 11)
 
 find_package(MPI REQUIRED)
 find_package(BLAS REQUIRED)
+find_package( LAPACK REQUIRED )
 
 include_directories(${MPI_INCLUDE_PATH})
 
