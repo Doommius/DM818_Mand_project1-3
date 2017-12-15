@@ -3,9 +3,13 @@
 # For other machines, replace CC = cc with
 # mpicc or other appropriate compiler
 
-CC = mpicc
+CC = cc
 CFLAGS = -O3
-LIBS = 
+
+CFLAGS = -Wall $(OPT) -std=gnu99 -funroll-loops -funit-at-a-time -mfpmath=sse -fstrict-aliasing -ftree-vectorize -ffast-math
+LDFLAGS = -Wall
+
+LIBS = -lrt
 
 dnsmat: main.o matrix.o comm.o
 	$(CC) $(CFLAGS) -o dnsmat main.o matrix.o $(LIBS)
