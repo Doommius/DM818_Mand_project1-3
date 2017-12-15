@@ -11,6 +11,7 @@ void reset_matrices(int matrixDimensions, double *matrixA, double *matrixB,doubl
 void destroy_matrices(double *matrixA, double *matrixB,double *matrixC  );
 void matrix_mult(int N, double* A, double* B, double* C);
 void naive_dgemm( int n, double *A, double *B, double *C );
+void squareDgemm (int N, double* A, double* B, double* C);
 void setzero(int matrixDimensions, double *matrixC);
 void sumMatrices(void *in, void *inout, int *length, MPI_Datatype *type);
 
