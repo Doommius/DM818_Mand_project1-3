@@ -1,9 +1,5 @@
-/home/jervelund/IDE/clion-2017.2.3/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/jervelund/ClionProjects/DM818
--- A library with BLAS API found.
--- A library with BLAS API found.
--- Looking for cheev_
--- Looking for cheev_ - found
--- A library with LAPACK API found.
--- Configuring done
--- Generating done
--- Build files have been written to: /home/jervelund/ClionProjects/DM818/cmake-build-debug
+C:\Users\Mark\.CLion2017.3\system\cygwin_cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /cygdrive/c/Users/Mark/CLionProjects/DM818_Mand_project1-3
+CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+CMake Error: CMAKE_C_COMPILER not set, after EnableLanguage
+CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage
+-- Configuring incomplete, errors occurred!
